@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legible: Know your rights. Keep your record.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="/translations.js"></script>
+<style>
+  :root {
+    --ink: #1a3828;
+    --ink-light: #2c5840;
+    --cream: #faf8f3;
+    --cream-deep: #f0ebe0;
+    --amber: #c68c3a;
+    --amber-deep: #a56f1e;
+    --sage: #4a8a78;
+    --sage-deep: #326860;
+    --charcoal: #33363d;
+    --charcoal-soft: #5c5f68;
+    --line: #ddd5c5;
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--cream);
+    color: var(--charcoal);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .serif { font-family: 'Source Serif 4', serif; }
+  a { text-decoration: none; color: inherit; }
+
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 0 32px; }
+
+  /* ---------- NAV ---------- */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250, 248, 243, 0.93);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 76px; }
+  .logo {
+    font-family: 'Source Serif 4', serif; font-weight: 700; font-size: 24px;
+    color: var(--ink); display: flex; align-items: center; gap: 10px; letter-spacing: -0.01em;
+  }
+  .logo .mark {
+    width: 28px; height: 28px; border-radius: 6px; background: var(--ink); color: var(--cream);
+    display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; font-style: italic;
+  }
+  .nav-links { display: flex; gap: 32px; font-size: 15px; font-weight: 500; color: var(--charcoal-soft); }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  .nav-lang-select {
+    padding: 7px 10px; border-radius: 7px; border: 1.5px solid var(--line);
+    background: var(--cream-deep); font-size: 13px; font-family: 'Inter', sans-serif;
+    color: var(--charcoal); cursor: pointer; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235c5f68'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px;
+  }
+  .nav-lang-select:focus { outline: 2px solid var(--amber); outline-offset: 1px; }
+  .nav-cta {
+    background: var(--ink); color: var(--cream) !important; padding: 11px 22px; border-radius: 8px;
+    font-weight: 600; font-size: 14.5px; transition: background 0.2s ease;
+  }
+  .nav-cta:hover { background: var(--ink-light); }
+  @media (max-width: 760px) { .nav-links { display: none; } }
+
+  /* ---------- HERO ---------- */
+  .hero { padding: 96px 0 88px; position: relative; }
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--sage-deep);
+    background: rgba(74, 138, 120, 0.1); padding: 7px 14px; border-radius: 100px; margin-bottom: 24px;
+  }
+  .eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--sage); }
+  .hero h1 { font-size: 52px; line-height: 1.08; font-weight: 600; color: var(--ink); letter-spacing: -0.015em; margin-bottom: 22px; }
+  .hero h1 em { font-style: italic; color: var(--amber-deep); }
+  .hero p { font-size: 18px; color: var(--charcoal-soft); max-width: 480px; margin-bottom: 32px; }
+  .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--ink); color: var(--cream); padding: 15px 28px; border-radius: 9px; font-weight: 600;
+    font-size: 15.5px; display: inline-flex; align-items: center; gap: 8px;
+    transition: transform 0.15s ease, background 0.2s ease; border: none; cursor: pointer;
+  }
+  .btn-primary:hover { background: var(--ink-light); transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .btn-secondary {
+    background: transparent; color: var(--ink); padding: 15px 26px; border-radius: 9px; font-weight: 600;
+    font-size: 15.5px; border: 1.5px solid var(--ink); transition: background 0.2s ease; cursor: pointer;
+  }
+  .btn-secondary:hover { background: rgba(26, 56, 40, 0.05); }
+
+  /* ---------- TRANSLATION CARD ---------- */
+  .translate-card { background: var(--white); border-radius: 18px; box-shadow: 0 24px 60px -20px rgba(26, 56, 40, 0.22); overflow: hidden; border: 1px solid var(--line); }
+  .translate-top { background: #efe9dd; padding: 18px 22px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; }
+  .translate-top .dot { width: 9px; height: 9px; border-radius: 50%; background: #d9cdb5; }
+  .translate-top span { font-size: 12.5px; color: var(--charcoal-soft); font-weight: 500; margin-left: 6px; }
+  .translate-body { padding: 30px 28px 32px; }
+  .legalese { font-family: 'Source Serif 4', serif; font-size: 14.5px; color: #8a8478; line-height: 1.7; padding-bottom: 22px; border-bottom: 1px dashed var(--line); margin-bottom: 4px; font-style: italic; }
+  .arrow-down { display: flex; justify-content: center; margin: 14px 0; }
+  .arrow-down svg { width: 22px; height: 22px; color: var(--amber); }
+  .plain { font-size: 17px; color: var(--ink); font-weight: 500; line-height: 1.65; padding-top: 6px; }
+  .plain .tag { display: block; background: rgba(74, 138, 120, 0.14); color: var(--sage-deep); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 4px 9px; border-radius: 6px; margin-bottom: 12px; width: fit-content; }
+
+  /* ---------- STATS BAR ---------- */
+  .stats { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--cream-deep); padding: 36px 0; }
+  .stats .wrap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center; }
+  .stat-num { font-family: 'Source Serif 4', serif; font-size: 34px; font-weight: 700; color: var(--ink); }
+  .stat-label { font-size: 13.5px; color: var(--charcoal-soft); margin-top: 4px; }
+  @media (max-width: 760px) { .stats .wrap { grid-template-columns: repeat(2, 1fr); gap: 32px; } }
+
+  /* ---------- SECTION ---------- */
+  .section { padding: 100px 0; }
+  .section-alt { background: var(--cream-deep); }
+  .section-head { max-width: 640px; margin-bottom: 56px; }
+  .section-head .eyebrow { margin-bottom: 18px; }
+  .section-head h2 { font-size: 38px; color: var(--ink); font-weight: 600; letter-spacing: -0.01em; margin-bottom: 16px; line-height: 1.18; }
+  .section-head p { font-size: 17px; color: var(--charcoal-soft); }
+  .section-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+
+  /* ---------- SCREENER ---------- */
+  .screener-card { background: var(--white); border-radius: 20px; border: 1px solid var(--line); box-shadow: 0 30px 70px -30px rgba(26,56,40,0.16); overflow: hidden; }
+  .screener-landing { padding: 48px 48px 40px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; }
+  .screener-landing-facts { display: flex; flex-direction: column; gap: 14px; }
+  .screener-fact { display: flex; align-items: flex-start; gap: 12px; }
+  .screener-fact-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--sage); flex-shrink: 0; margin-top: 7px; }
+  .screener-fact p { font-size: 14.5px; color: var(--charcoal); line-height: 1.6; }
+  .screener-start-btn {
+    margin-top: 28px; background: var(--amber); color: var(--white); padding: 15px 28px; border-radius: 9px;
+    font-weight: 700; font-size: 15px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+    transition: background 0.2s ease;
+  }
+  .screener-start-btn:hover { background: var(--amber-deep); }
+  .screener-note { font-size: 12.5px; color: var(--charcoal-soft); margin-top: 12px; }
+
+  .screener-questions { display: none; padding: 0; }
+  .screener-progress-bar-wrap { padding: 24px 48px 0; }
+  .screener-progress-meta { display: flex; justify-content: space-between; font-size: 13px; color: var(--charcoal-soft); font-weight: 600; margin-bottom: 10px; }
+  .screener-progress-track { height: 5px; background: var(--cream-deep); border-radius: 100px; overflow: hidden; }
+  .screener-progress-fill { height: 100%; background: var(--amber); border-radius: 100px; transition: width 0.4s ease; }
+  .screener-q-wrap { padding: 28px 48px 36px; }
+  .screener-cat-label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--sage-deep); margin-bottom: 6px; }
+  .screener-cat-title { font-family: 'Source Serif 4', serif; font-size: 22px; color: var(--ink); font-weight: 600; margin-bottom: 28px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+  .screener-q-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+  .screener-q-item { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center; background: var(--cream); border-radius: 10px; padding: 16px 18px; border: 1px solid transparent; transition: border-color 0.15s; }
+  .screener-q-item.answered { border-color: var(--line); }
+  .screener-q-text { font-size: 14.5px; color: var(--charcoal); line-height: 1.5; }
+  .screener-q-btns { display: flex; gap: 6px; flex-shrink: 0; }
+  .sq-btn {
+    padding: 7px 14px; border-radius: 7px; border: 1.5px solid var(--line); background: var(--white);
+    font-size: 13px; font-weight: 600; color: var(--charcoal-soft); cursor: pointer; transition: all 0.15s ease; white-space: nowrap;
+  }
+  .sq-btn:hover { border-color: var(--charcoal-soft); color: var(--charcoal); }
+  .sq-btn.sel-yes { background: rgba(26,56,40,0.1); border-color: var(--ink); color: var(--ink); }
+  .sq-btn.sel-sometimes { background: rgba(198,140,58,0.12); border-color: var(--amber); color: var(--amber-deep); }
+  .sq-btn.sel-no { background: rgba(74,138,120,0.1); border-color: var(--sage); color: var(--sage-deep); }
+  .screener-nav { display: flex; justify-content: space-between; align-items: center; }
+  .screener-back { background: none; border: none; font-size: 14px; font-weight: 600; color: var(--charcoal-soft); cursor: pointer; padding: 4px 0; }
+  .screener-back:hover { color: var(--ink); }
+  .screener-next {
+    background: var(--ink); color: var(--cream); padding: 13px 26px; border-radius: 9px;
+    font-weight: 700; font-size: 14.5px; border: none; cursor: pointer; transition: background 0.2s ease;
+  }
+  .screener-next:hover:not(:disabled) { background: var(--ink-light); }
+  .screener-next:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .screener-result { display: none; padding: 48px; }
+  .result-tier { display: inline-flex; align-items: center; gap: 8px; padding: 7px 16px; border-radius: 100px; font-size: 13px; font-weight: 700; margin-bottom: 20px; }
+  .result-tier.mild { background: rgba(74,138,120,0.14); color: var(--sage-deep); }
+  .result-tier.moderate { background: rgba(198,140,58,0.14); color: var(--amber-deep); }
+  .result-tier.strong { background: rgba(192,57,43,0.1); color: #a93226; }
+  .screener-result h3 { font-size: 28px; color: var(--ink); font-weight: 600; margin-bottom: 16px; }
+  .screener-result-body { font-size: 15.5px; color: var(--charcoal); line-height: 1.75; max-width: 640px; margin-bottom: 28px; }
+  .screener-top-cats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+  .screener-cat-tag { background: var(--cream-deep); border: 1px solid var(--line); border-radius: 100px; padding: 6px 14px; font-size: 13px; font-weight: 600; color: var(--charcoal); }
+  .screener-result-ctas { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 24px; }
+  .screener-disclaimer { font-size: 12.5px; color: var(--charcoal-soft); line-height: 1.6; padding-top: 20px; border-top: 1px dashed var(--line); }
+  .screener-retake { background: none; border: none; font-size: 13.5px; color: var(--charcoal-soft); cursor: pointer; text-decoration: underline; margin-top: 10px; }
+
+  @media (max-width: 760px) {
+    .screener-landing { grid-template-columns: 1fr; gap: 28px; padding: 28px 24px; }
+    .screener-progress-bar-wrap, .screener-q-wrap { padding-left: 24px; padding-right: 24px; }
+    .screener-result { padding: 28px 24px; }
+    .screener-q-item { grid-template-columns: 1fr; gap: 10px; }
+  }
+
+  /* ---------- NAVIGATOR ---------- */
+  .navigator-card { background: var(--white); border-radius: 20px; border: 1px solid var(--line); box-shadow: 0 30px 70px -30px rgba(26,56,40,0.16); overflow: hidden; }
+  .nav-tabs { display: flex; border-bottom: 1px solid var(--line); background: var(--cream-deep); }
+  .nav-tab { flex: 1; text-align: center; padding: 18px 12px; font-size: 14.5px; font-weight: 600; color: var(--charcoal-soft); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s ease; }
+  .nav-tab.active { color: var(--ink); border-bottom-color: var(--amber); background: var(--white); }
+  .navigator-inner { padding: 40px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 12px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+  .field select, .field input, .field textarea {
+    width: 100%; padding: 13px 14px; border-radius: 9px; border: 1.5px solid var(--line);
+    background: var(--cream); font-size: 14.5px; font-family: 'Inter', sans-serif; color: var(--charcoal); cursor: pointer;
+  }
+  .field textarea { cursor: text; resize: vertical; min-height: 70px; }
+  .field select:focus, .field input:focus, .field textarea:focus { outline: 2px solid var(--amber); outline-offset: 1px; border-color: var(--amber); }
+  .field-note { font-size: 12.5px; color: var(--charcoal-soft); margin-bottom: 24px; }
+  .generate-btn {
+    width: 100%; background: var(--amber); color: var(--white); padding: 15px; border-radius: 9px;
+    font-weight: 700; font-size: 15.5px; border: none; cursor: pointer; transition: background 0.2s ease;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .generate-btn:hover { background: var(--amber-deep); }
+  .generate-btn:disabled { opacity: 0.7; cursor: wait; }
+  .spinner {
+    width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+    border-radius: 50%; animation: spin 0.7s linear infinite; display: none;
+  }
+  .spinner.show { display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .result-box { margin-top: 28px; background: var(--cream-deep); border-radius: 14px; border: 1px solid var(--line); padding: 28px; display: none; }
+  .result-box.show { display: block; animation: fadeUp 0.4s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .result-box h4 { font-family: 'Source Serif 4', serif; font-size: 19px; color: var(--ink); margin-bottom: 14px; }
+  .result-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+  .result-list li { display: flex; gap: 12px; font-size: 14.5px; color: var(--charcoal); align-items: flex-start; }
+  .result-list li .check { color: var(--sage-deep); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .cite { font-size: 12.5px; color: var(--charcoal-soft); font-style: italic; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--line); }
+  .letter-btn {
+    margin-top: 18px; background: var(--ink); color: var(--cream); padding: 12px 20px; border-radius: 8px;
+    font-size: 14px; font-weight: 600; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .letter-btn:hover { background: var(--ink-light); }
+  .error-msg { color: #a93226; font-size: 14px; margin-top: 14px; display: none; }
+  .error-msg.show { display: block; }
+  .privacy-notice {
+    background: rgba(74, 138, 120, 0.08); border: 1px solid rgba(74, 138, 120, 0.25); border-radius: 12px;
+    padding: 16px 18px; font-size: 13.5px; color: var(--sage-deep); margin-bottom: 22px; line-height: 1.6;
+  }
+  .privacy-notice strong { color: var(--sage-deep); }
+  .result-disclaimer {
+    background: rgba(198,140,58,0.08); border: 1px solid rgba(198,140,58,0.28);
+    border-radius: 10px; padding: 14px 16px; font-size: 13px; color: var(--charcoal);
+    line-height: 1.65; margin: 18px 0 14px;
+  }
+  .letter-disclaimer {
+    font-size: 12.5px; color: var(--charcoal-soft); line-height: 1.55;
+    margin-top: 10px; padding: 10px 14px; background: rgba(26,56,40,0.04); border-radius: 8px;
+  }
+  .footer-disclaimer {
+    width: 100%; color: rgba(250,248,243,0.38); font-size: 12px; line-height: 1.65;
+    padding-top: 16px; border-top: 1px solid rgba(250,248,243,0.1); margin-top: 8px;
+  }
+  @media (max-width: 760px) { .field-row { grid-template-columns: 1fr; } .navigator-inner { padding: 24px; } }
+
+  /* ---------- PASSPORT ---------- */
+  .passport-layout { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 48px; align-items: start; }
+  .passport-form-card { background: var(--white); border: 1px solid var(--line); border-radius: 18px; padding: 30px; box-shadow: 0 24px 60px -28px rgba(26,56,40,0.16); position: sticky; top: 100px; }
+  .passport-form-card h3 { font-size: 18px; color: var(--ink); margin-bottom: 22px; font-weight: 600; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+  .pf-field { margin-bottom: 16px; }
+  .pf-field label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+  .pf-field input, .pf-field textarea, .pf-field select {
+    width: 100%; padding: 13px 14px; border-radius: 9px; border: 1.5px solid var(--line);
+    background: var(--cream); font-size: 14.5px; font-family: 'Inter', sans-serif; color: var(--charcoal);
+  }
+  .pf-field textarea { resize: vertical; min-height: 80px; }
+  .pf-field input:focus, .pf-field textarea:focus, .pf-field select:focus { outline: 2px solid var(--amber); outline-offset: 1px; border-color: var(--amber); }
+  .pf-radio-row { display: flex; gap: 10px; }
+  .pf-radio-row button {
+    flex: 1; padding: 10px; border-radius: 8px; border: 1.5px solid var(--line); background: var(--cream);
+    font-size: 13.5px; font-weight: 600; color: var(--charcoal-soft); cursor: pointer; transition: all 0.15s ease;
+  }
+  .pf-radio-row button.selected.works { border-color: var(--sage); background: rgba(74,138,120,0.12); color: var(--sage-deep); }
+  .pf-radio-row button.selected.noworks { border-color: #c0392b; background: rgba(192,57,43,0.08); color: #a93226; }
+  .add-entry-btn { width: 100%; background: var(--amber); color: var(--white); padding: 14px; border-radius: 9px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; margin-top: 6px; transition: background 0.2s ease; }
+  .add-entry-btn:hover { background: var(--amber-deep); }
+  .pf-error { color: #a93226; font-size: 13.5px; margin-top: 10px; display: none; }
+  .pf-error.show { display: block; }
+
+  .passport-summary-row { display: flex; gap: 12px; margin-bottom: 24px; }
+  .ps-stat { flex: 1; background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .ps-stat .ps-num { font-family: 'Source Serif 4', serif; font-size: 26px; font-weight: 700; color: var(--ink); }
+  .ps-stat .ps-label { font-size: 12px; color: var(--charcoal-soft); margin-top: 2px; }
+  .ps-stat.sage .ps-num { color: var(--sage-deep); }
+  .ps-stat.amber .ps-num { color: var(--amber-deep); }
+  .passport-timeline { position: relative; padding-left: 28px; min-height: 200px; }
+  .passport-timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--line); }
+  .passport-empty { text-align: center; padding: 56px 24px; color: var(--charcoal-soft); font-size: 14.5px; border: 1.5px dashed var(--line); border-radius: 16px; margin-left: -28px; }
+  .pe-card { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; position: relative; margin-bottom: 14px; }
+  .pe-card::before {
+    content: ''; position: absolute; left: -28px; top: 22px; width: 13px; height: 13px; border-radius: 50%;
+    background: var(--cream); border: 3px solid var(--sage);
+  }
+  .pe-card.noworks::before { border-color: #c0392b; }
+  .pe-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 6px; }
+  .pe-strategy { font-family: 'Source Serif 4', serif; font-size: 16.5px; color: var(--ink); font-weight: 600; }
+  .pe-pill { font-size: 11.5px; font-weight: 700; padding: 4px 10px; border-radius: 100px; white-space: nowrap; flex-shrink: 0; }
+  .pe-pill.works { background: rgba(74,138,120,0.16); color: var(--sage-deep); }
+  .pe-pill.noworks { background: rgba(192,57,43,0.1); color: #a93226; }
+  .pe-note { font-size: 13.5px; color: var(--charcoal-soft); margin-top: 4px; }
+  .pe-date { font-size: 11.5px; color: var(--charcoal-soft); opacity: 0.7; margin-top: 10px; display: block; }
+  .pe-setting-tag { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 9px; border-radius: 5px; background: rgba(26,56,40,0.07); color: var(--ink-light); margin-top: 8px; }
+  .pe-era-header { font-family: 'Source Serif 4', serif; font-size: 13.5px; color: var(--charcoal-soft); font-weight: 600; margin: 6px 0 12px -28px; padding: 6px 10px 6px 12px; border-left: 3px solid var(--amber); background: var(--cream-deep); border-radius: 0 6px 6px 0; }
+  .pe-delete { position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--charcoal-soft); cursor: pointer; font-size: 12.5px; opacity: 0.45; padding: 2px 4px; }
+  .pe-delete:hover { opacity: 1; color: #a93226; }
+  .passport-actions { display: flex; gap: 12px; margin-top: 18px; }
+  .passport-actions .btn-download {
+    flex: 1; padding: 12px; border-radius: 9px; font-size: 13.5px; font-weight: 600; cursor: pointer;
+    background: var(--ink); color: var(--cream); border: none; transition: background 0.15s ease;
+  }
+  .passport-actions .btn-download:hover { background: var(--ink-light); }
+  .passport-actions .btn-clear {
+    flex: 1; padding: 12px; border-radius: 9px; font-size: 13.5px; font-weight: 600; cursor: pointer;
+    background: transparent; color: var(--charcoal-soft); border: 1.5px solid var(--line); transition: all 0.15s ease;
+  }
+  .passport-actions .btn-clear:hover { border-color: #c0392b; color: #a93226; background: rgba(192,57,43,0.05); }
+  .passport-id-note { font-size: 12px; color: var(--charcoal-soft); margin-top: 14px; line-height: 1.6; background: var(--cream-deep); padding: 12px 14px; border-radius: 10px; }
+  @media (max-width: 860px) { .passport-layout { grid-template-columns: 1fr; } .passport-form-card { position: static; } }
+
+  /* ---------- GUIDES ---------- */
+  .guides-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .guide-card {
+    background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 28px 26px;
+    display: flex; flex-direction: column; gap: 10px; transition: box-shadow 0.2s ease, transform 0.15s ease;
+    cursor: pointer;
+  }
+  .guide-card:hover { box-shadow: 0 12px 32px -12px rgba(26,56,40,0.18); transform: translateY(-2px); }
+  .guide-icon { width: 42px; height: 42px; border-radius: 10px; background: rgba(26,56,40,0.07); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .guide-card h4 { font-size: 16px; color: var(--ink); font-weight: 600; line-height: 1.3; }
+  .guide-card p { font-size: 13.5px; color: var(--charcoal-soft); line-height: 1.6; flex: 1; }
+  .guide-link { font-size: 13px; font-weight: 700; color: var(--amber-deep); display: flex; align-items: center; gap: 5px; margin-top: 4px; }
+  .guide-link::after { content: '→'; }
+  @media (max-width: 860px) { .guides-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .guides-grid { grid-template-columns: 1fr; } }
+
+  /* ---------- START HERE ---------- */
+  .start-here-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+  .start-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+  .start-fact { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 20px 18px; }
+  .start-fact-num { font-family: 'Source Serif 4', serif; font-size: 28px; font-weight: 700; color: var(--amber-deep); margin-bottom: 6px; }
+  .start-fact p { font-size: 13.5px; color: var(--charcoal); line-height: 1.55; }
+  .start-steps { display: flex; flex-direction: column; gap: 0; }
+  .start-step { display: flex; gap: 20px; padding-bottom: 28px; position: relative; }
+  .start-step:not(:last-child)::after { content: ''; position: absolute; left: 17px; top: 36px; bottom: 0; width: 2px; background: var(--line); }
+  .step-num { width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: var(--cream); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+  .start-step h4 { font-size: 15.5px; color: var(--ink); font-weight: 600; margin-bottom: 4px; margin-top: 6px; }
+  .start-step p { font-size: 14px; color: var(--charcoal-soft); line-height: 1.6; }
+  @media (max-width: 860px) { .start-here-layout { grid-template-columns: 1fr; } .start-facts { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .start-facts { grid-template-columns: 1fr; } }
+
+  /* ---------- HOW IT WORKS ---------- */
+  .steps-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .step-card { background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 32px 26px; }
+  .step-icon { width: 46px; height: 46px; border-radius: 11px; background: rgba(198,140,58,0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; font-size: 20px; }
+  .step-card h3 { font-size: 18px; color: var(--ink); margin-bottom: 10px; font-weight: 600; }
+  .step-card p { font-size: 14.5px; color: var(--charcoal-soft); }
+  @media (max-width: 760px) { .steps-row { grid-template-columns: 1fr; } }
+
+  /* ---------- CTA ---------- */
+  .cta-band { background: var(--ink); padding: 88px 0; text-align: center; }
+  .cta-band h2 { color: var(--cream); font-size: 36px; font-weight: 600; margin-bottom: 16px; letter-spacing: -0.01em; }
+  .cta-band p { color: rgba(250, 248, 243, 0.7); font-size: 16.5px; margin-bottom: 32px; }
+  .cta-band .btn-primary { background: var(--amber); }
+  .cta-band .btn-primary:hover { background: var(--amber-deep); }
+
+  /* ---------- FOOTER ---------- */
+  footer { background: var(--charcoal); padding: 48px 0 36px; }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+  footer .logo { color: var(--cream); }
+  footer .logo .mark { background: var(--amber); }
+  .footer-links { display: flex; gap: 24px; align-items: center; }
+  .footer-links a { color: rgba(250,248,243,0.5); font-size: 13.5px; transition: color 0.15s; cursor: pointer; }
+  .footer-links a:hover { color: rgba(250,248,243,0.85); }
+  footer .tagline { color: rgba(250,248,243,0.45); font-size: 13px; }
+  .lang-disclaimer { font-size: 12px; color: var(--charcoal-soft); line-height: 1.55; margin-bottom: 10px; }
+
+  /* ---------- MODALS ---------- */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s ease; padding: 20px;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--white); border-radius: 20px; max-width: 620px; width: 100%;
+    max-height: 85vh; overflow-y: auto; padding: 44px 44px 40px; position: relative;
+    box-shadow: 0 40px 80px -20px rgba(0,0,0,0.3);
+  }
+  .modal-close {
+    position: absolute; top: 18px; right: 22px; background: none; border: none;
+    font-size: 20px; cursor: pointer; color: var(--charcoal-soft); line-height: 1; padding: 4px;
+  }
+  .modal-close:hover { color: var(--ink); }
+  .modal h2 { font-size: 26px; color: var(--ink); margin-bottom: 6px; }
+  .modal .modal-date { font-size: 12.5px; color: var(--charcoal-soft); margin-bottom: 24px; }
+  .modal h3 { font-size: 15px; font-weight: 700; color: var(--ink); margin: 22px 0 8px; font-family: 'Inter', sans-serif; }
+  .modal p { font-size: 14.5px; color: var(--charcoal); line-height: 1.75; margin-bottom: 10px; }
+  .modal ul { padding-left: 20px; margin-bottom: 10px; }
+  .modal li { font-size: 14.5px; color: var(--charcoal); line-height: 1.7; margin-bottom: 5px; }
+  @media (max-width: 560px) { .modal { padding: 28px 24px; } }
+
+  /* ---------- REVEAL ---------- */
+  /* ---------- LANGUAGE ---------- */
+  .lang-row { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; padding: 14px 16px; background: var(--cream-deep); border-radius: 10px; border: 1px solid var(--line); }
+  .lang-row label { font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+  .lang-select { padding: 8px 12px; border-radius: 7px; border: 1.5px solid var(--line); background: var(--white); font-size: 13.5px; font-family: 'Inter', sans-serif; color: var(--charcoal); cursor: pointer; }
+  .lang-select:focus { outline: 2px solid var(--amber); outline-offset: 1px; }
+  .lang-disclaimer { font-size: 12px; color: var(--charcoal-soft); line-height: 1.55; flex: 1; display: none; }
+  .lang-disclaimer.show { display: block; }
+  .result-box[dir="rtl"] { text-align: right; }
+  .result-box[dir="rtl"] .result-list li { flex-direction: row-reverse; }
+
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+  @media (max-width: 900px) { .hero .wrap { grid-template-columns: 1fr; } .hero h1 { font-size: 38px; } }
+  @media (max-width: 600px) {
+    .wrap { padding: 0 20px; }
+    .nav-cta { display: none; }
+    .section { padding: 64px 0; }
+    .hero { padding: 48px 0 40px; }
+    .hero h1 { font-size: 30px; }
+    .hero p { font-size: 16px; }
+    .section-head h2 { font-size: 26px; }
+    .section-head { margin-bottom: 36px; }
+    .cta-band { padding: 64px 0; }
+    .cta-band h2 { font-size: 26px; }
+    .cta-band p { font-size: 15px; }
+    .result-box { padding: 20px; }
+    .navigator-inner { padding: 20px !important; }
+    .screener-q-wrap { padding-left: 16px !important; padding-right: 16px !important; }
+    .step-card { padding: 24px 20px; }
+    .guide-card { padding: 20px; }
+    footer .wrap { flex-direction: column; align-items: flex-start; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="logo"><span class="mark">L</span>Legible</div>
+    <div class="nav-links">
+      <a href="#screener" data-i18n="navNotSure">Not sure where to start?</a>
+      <a href="#navigator" data-i18n="navRights">Know your rights</a>
+      <a href="#passport" data-i18n="navPassport">Your Passport</a>
+      <a href="#start-here" data-i18n="navIEP">IEP 101</a>
+    </div>
+    <div class="nav-right">
+      <select id="langSelect" class="nav-lang-select" onchange="applyLanguage(this.value)" aria-label="Select language">
+        <option value="en">English</option>
+        <option value="es">Español</option>
+        <option value="zh">中文</option>
+        <option value="vi">Tiếng Việt</option>
+        <option value="ar">العربية</option>
+        <option value="hi">हिन्दी</option>
+      </select>
+      <a href="#navigator" class="nav-cta" data-i18n="navCta">Check your rights</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow" data-i18n="heroEyebrow">Free, forever, for every family</div>
+      <h1 id="heroH1">The law already protects your child.<br><em>Now you can read it.</em></h1>
+      <p data-i18n="heroP">Legible turns IDEA and Section 504 into plain language for all 50 states, helps you draft a clear accommodation request letter, and gives your child a record that follows them across schools.</p>
+      <div class="hero-ctas">
+        <a href="#screener" class="btn-primary" data-i18n="heroCta1">Not sure where to start? →</a>
+        <a href="#navigator" class="btn-secondary" data-i18n="heroCta2">Check your rights</a>
+      </div>
+    </div>
+    <div class="translate-card">
+      <div class="translate-top"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>Section 504, as written</span></div>
+      <div class="translate-body">
+        <p class="legalese">"No otherwise qualified individual with a disability... shall, solely by reason of her or his disability, be excluded from participation in, be denied the benefits of, or be subjected to discrimination under any program or activity receiving Federal financial assistance."</p>
+        <div class="arrow-down"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg></div>
+        <p class="plain"><span class="tag">What this means for you</span>If your child has a disability, your school cannot deny them a fair shot at learning. That includes extra time, a quiet space, modified work, or anything else they need to access what every other student gets.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="wrap">
+    <div><div class="stat-num">50</div><div class="stat-label" data-i18n="stat1Label">States covered</div></div>
+    <div><div class="stat-num">0</div><div class="stat-label" data-i18n="stat2Label">Dollars an attorney costs you</div></div>
+    <div><div class="stat-num">1</div><div class="stat-label" data-i18n="stat3Label">Letter, ready to download</div></div>
+    <div><div class="stat-num">∞</div><div class="stat-label" data-i18n="stat4Label">Years the record follows your child</div></div>
+  </div>
+</div>
+
+<!-- ===== SCREENER ===== -->
+<section class="section section-alt" id="screener">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow" data-i18n="screenerEyebrow">Not sure where to start?</div>
+      <h2 data-i18n="screenerH2">Should you request a school evaluation?</h2>
+      <p data-i18n="screenerP">Answer 27 quick questions across six areas of your child's school experience. You'll get a plain-language reflection (not a diagnosis) on whether it may be worth raising with your school.</p>
+    </div>
+
+    <div class="screener-card reveal">
+      <!-- Landing -->
+      <div id="screener-landing" class="screener-landing">
+        <div>
+          <h3 style="font-size:22px; color:var(--ink); margin-bottom:18px;" data-i18n="screenerLandingH3">Before you begin</h3>
+          <div class="screener-landing-facts">
+            <div class="screener-fact"><div class="screener-fact-dot"></div><p data-i18n="screenerFact1">You do not need a diagnosis to request an evaluation. Any parent can make a written request at any time under IDEA.</p></div>
+            <div class="screener-fact"><div class="screener-fact-dot"></div><p data-i18n="screenerFact2">The school must respond in writing. If they decline, they have to explain why. You have options.</p></div>
+            <div class="screener-fact"><div class="screener-fact-dot"></div><p data-i18n="screenerFact3">Public school evaluations are free. You cannot be charged for the assessment.</p></div>
+            <div class="screener-fact"><div class="screener-fact-dot"></div><p data-i18n="screenerFact4">This screener is not diagnostic. It reflects your observations back to you and helps you decide whether to ask more questions.</p></div>
+          </div>
+          <button class="screener-start-btn" onclick="screenerStart()" data-i18n="screenerStartBtn">Start the screener →</button>
+          <p class="screener-note" data-i18n="screenerNote">27 questions · takes about 3 minutes · nothing is saved or sent</p>
+        </div>
+        <div style="background:var(--cream-deep); border-radius:14px; padding:28px 24px; border:1px solid var(--line);">
+          <div style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--sage-deep); margin-bottom:16px;" data-i18n="screenerAreasLabel">Six areas we'll ask about</div>
+          <div style="display:flex; flex-direction:column; gap:11px;">
+            <div style="font-size:14px; color:var(--charcoal); display:flex; gap:12px; align-items:center;"><span style="width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0;display:inline-block;"></span><span data-i18n="areaLearning">Learning and Academics</span></div>
+            <div style="font-size:14px; color:var(--charcoal); display:flex; gap:12px; align-items:center;"><span style="width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0;display:inline-block;"></span><span data-i18n="areaCommunication">Communication</span></div>
+            <div style="font-size:14px; color:var(--charcoal); display:flex; gap:12px; align-items:center;"><span style="width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0;display:inline-block;"></span><span data-i18n="areaAttention">Attention and Behavior</span></div>
+            <div style="font-size:14px; color:var(--charcoal); display:flex; gap:12px; align-items:center;"><span style="width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0;display:inline-block;"></span><span data-i18n="areaSocial">Social Interaction</span></div>
+            <div style="font-size:14px; color:var(--charcoal); display:flex; gap:12px; align-items:center;"><span style="width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0;display:inline-block;"></span><span data-i18n="areaSensory">Sensory or Motor Concerns</span></div>
+            <div style="font-size:14px; color:var(--charcoal); display:flex; gap:12px; align-items:center;"><span style="width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0;display:inline-block;"></span><span data-i18n="areaDaily">Daily School Functioning</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Questions -->
+      <div id="screener-questions" class="screener-questions">
+        <div class="screener-progress-bar-wrap">
+          <div class="screener-progress-meta">
+            <span id="screener-cat-counter"></span>
+            <span id="screener-answered-counter"></span>
+          </div>
+          <div class="screener-progress-track"><div class="screener-progress-fill" id="screener-fill"></div></div>
+        </div>
+        <div class="screener-q-wrap">
+          <div class="screener-cat-label" id="screener-cat-label"></div>
+          <div class="screener-cat-title" id="screener-cat-title"></div>
+          <div class="screener-q-list" id="screener-q-list"></div>
+          <div class="screener-nav">
+            <button class="screener-back" id="screener-back-btn" onclick="screenerBack()">← Back</button>
+            <button class="screener-next" id="screener-next-btn" onclick="screenerNext()" disabled>Next →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div id="screener-result" class="screener-result">
+        <div id="screener-tier-badge" class="result-tier"></div>
+        <h3 id="screener-headline"></h3>
+        <div class="screener-top-cats" id="screener-top-cats"></div>
+        <p class="screener-result-body" id="screener-body"></p>
+        <div class="screener-result-ctas">
+          <a href="#navigator" class="btn-primary" style="font-size:14.5px; padding:13px 22px;">Check your rights →</a>
+          <button class="btn-secondary" style="font-size:14.5px; padding:13px 22px;" onclick="switchToExplain()">Explain an IEP or 504</button>
+        </div>
+        <p class="screener-disclaimer" data-i18n="screenerDisclaimer">This is not a medical or educational diagnosis. It reflects the observations you entered and is meant to help you decide whether to have a conversation with your child's school. Laws and timelines vary by state. For serious disputes, an education advocate or attorney can help.</p>
+        <br><button class="screener-retake" onclick="screenerReset()" data-i18n="screenerRetake">Retake the screener</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== NAVIGATOR ===== -->
+<section class="section" id="navigator">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow" data-i18n="navSectionEyebrow">Know your rights</div>
+      <h2 data-i18n="navSectionH2">Tell us what's going on. We'll tell you what the law says.</h2>
+      <p data-i18n="navSectionP">Pick your state, your child's grade, and the concern, even if there's no diagnosis yet. We'll explain what federal and state law actually guarantees, in plain language, with the statute citations included.</p>
+    </div>
+
+    <div class="navigator-card reveal">
+      <div class="nav-tabs">
+        <div class="nav-tab active" data-tab="check" data-i18n="tabCheck">Check rights</div>
+        <div class="nav-tab" data-tab="upload" id="explain-tab" data-i18n="tabExplain">Explain an IEP or 504</div>
+      </div>
+      <div class="navigator-inner">
+
+        <div id="tab-check">
+          <div class="field-row">
+            <div class="field">
+              <label for="state" data-i18n="stateLabel">State</label>
+              <select id="state"></select>
+            </div>
+            <div class="field">
+              <label for="grade" data-i18n="gradeLevelLabel">Grade level</label>
+              <select id="grade">
+                <option data-i18n="gradePreschool">Preschool / early intervention</option>
+                <option data-i18n="gradeElementary">Elementary school</option>
+                <option data-i18n="gradeMiddle">Middle school</option>
+                <option data-i18n="gradeHigh">High school</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="disability" data-i18n="disabilityLabel">Disability or concern</label>
+              <select id="disability">
+                <option value="ADHD" data-i18n="disabilityADHD">ADHD</option>
+                <option value="Dyslexia or other learning disability" data-i18n="disabilityDyslexia">Dyslexia or other learning disability</option>
+                <option value="Autism" data-i18n="disabilityAutism">Autism</option>
+                <option value="Anxiety, depression, or other mental health condition" data-i18n="disabilityMentalHealth">Anxiety, depression, or other mental health condition</option>
+                <option value="Hearing impairment" data-i18n="disabilityHearing">Hearing impairment</option>
+                <option value="Vision impairment" data-i18n="disabilityVision">Vision impairment</option>
+                <option value="Speech or language impairment" data-i18n="disabilitySpeech">Speech or language impairment</option>
+                <option value="Physical or mobility disability" data-i18n="disabilityPhysical">Physical or mobility disability</option>
+                <option value="Chronic illness (diabetes, epilepsy, asthma, etc.)" data-i18n="disabilityChronic">Chronic illness (diabetes, epilepsy, asthma, etc.)</option>
+                <option value="Processing or memory difficulty" data-i18n="disabilityProcessing">Processing or memory difficulty</option>
+                <option value="Not sure yet, just concerned" data-i18n="disabilityNotSure">Not sure yet, just concerned</option>
+                <option value="Other / describe below" data-i18n="disabilityOther">Other / describe below</option>
+              </select>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom: 18px;">
+            <label for="extraDetails" data-i18n="extraLabel">Anything specific you want addressed? (optional)</label>
+            <textarea id="extraDetails" data-i18n-placeholder="extraPlaceholder" placeholder="Example: my daughter was just denied an evaluation, or my son is being disciplined for behavior related to his diagnosis..."></textarea>
+          </div>
+          <p class="field-note" data-i18n="fieldNote">This is informational, not legal advice. For serious disputes, an education advocate or attorney can help further.</p>
+          <span class="lang-disclaimer" id="langDisclaimer" style="display:none; font-size:12px; color:var(--charcoal-soft); margin-bottom:12px; display:none; line-height:1.55;"></span>
+
+          <button class="generate-btn" id="genBtn" onclick="generateRights()">
+            <span class="spinner" id="genSpinner"></span>
+            <span id="genBtnText" data-i18n="genBtnText">Show me what we're entitled to</span>
+          </button>
+          <p class="error-msg" id="errorMsg" role="alert" data-i18n="errorMsg">Something went wrong generating your results. Please try again.</p>
+
+          <div class="result-box" id="result" aria-live="polite">
+            <h4 id="resultHeading">Here's what the law says</h4>
+            <ul class="result-list" id="resultList"></ul>
+            <div class="cite" id="resultCite"></div>
+            <div class="result-disclaimer">State timelines and school-specific procedures may vary. Laws can change. Review this information with your school team, a parent advocate, or a special education attorney before sending any formal requests.</div>
+            <button class="letter-btn" id="letterBtn" onclick="downloadLetter()" data-i18n="letterBtn">⬇ Download my accommodation letter (PDF)</button>
+            <p class="letter-disclaimer">AI-generated letters may contain errors. Read this letter carefully before sending. If anything seems wrong or unclear, consult a qualified advocate or attorney.</p>
+          </div>
+        </div>
+
+        <div id="tab-upload" style="display:none;">
+          <div class="privacy-notice">
+            <strong data-i18n="privacyNoticeStrong">Your privacy, by design.</strong><span data-i18n="privacyNoticeBody"> IEP and 504 documents can contain sensitive information. Whenever possible, paste only the section you want explained. Nothing you paste here is saved, logged, or stored.</span>
+          </div>
+          <div class="privacy-notice" style="margin-top:-8px;">
+            <strong>Before pasting:</strong> If possible, remove or replace your child's full name, student ID number, school name, and teacher names. This text is sent to an AI service once and never stored, but removing identifying details before pasting is good practice.
+          </div>
+          <div class="field" style="margin-bottom: 18px;">
+            <label for="docPaste" data-i18n="docLabel">Paste the text of your child's IEP or 504 plan</label>
+            <textarea id="docPaste" style="min-height: 160px;" data-i18n-placeholder="docPlaceholder" placeholder="Paste the document text here..."></textarea>
+          </div>
+          <button class="generate-btn" id="docBtn" onclick="analyzeDocument()">
+            <span class="spinner" id="docSpinner"></span>
+            <span id="docBtnText" data-i18n="docBtnText">Explain this document to me</span>
+          </button>
+          <p class="error-msg" id="docErrorMsg" role="alert" data-i18n="docError">Could not read that document. Try pasting more of the text.</p>
+
+          <div class="result-box" id="docResult" aria-live="polite">
+            <h4 data-i18n="docResultH4">What this document actually grants</h4>
+            <p id="docSummary" style="font-size: 14.5px; color: var(--charcoal); margin-bottom: 18px;"></p>
+            <div style="margin-bottom: 18px;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--sage-deep); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;" data-i18n="docAccLabel">Accommodations and services included</div>
+              <ul class="result-list" id="docAccommodations"></ul>
+            </div>
+            <div id="docConcernsWrap" style="display:none;">
+              <div style="font-size: 13px; font-weight: 700; color: #a93226; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;" data-i18n="docConcernLabel">Worth a closer look</div>
+              <ul class="result-list" id="docConcerns"></ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PASSPORT ===== -->
+<section class="section section-alt" id="passport">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow" data-i18n="passportEyebrow">Your Passport</div>
+      <h2 data-i18n="passportH2">A record that belongs to your child, not the school</h2>
+      <p data-i18n="passportP">Every time a student changes schools, what worked for them often gets lost. Log what's been tried, what actually worked, and carry it with you everywhere you go next.</p>
+    </div>
+
+    <div class="passport-layout">
+      <div class="passport-form-card reveal">
+        <h3 data-i18n="passportFormH3">Add to the Passport</h3>
+        <div class="pf-field">
+          <label for="peStrategy" data-i18n="strategyLabel">Strategy or accommodation</label>
+          <input type="text" id="peStrategy" data-i18n-placeholder="strategyPlaceholder" placeholder="e.g. extended time on tests">
+        </div>
+        <div class="pf-field">
+          <label data-i18n="workedLabel">Did it work?</label>
+          <div class="pf-radio-row">
+            <button type="button" id="peWorksBtn" onclick="setOutcome('works')" data-i18n="workedBtn">Worked</button>
+            <button type="button" id="peNoworksBtn" onclick="setOutcome('noworks')" data-i18n="didntWorkBtn">Didn't work</button>
+          </div>
+        </div>
+        <div class="pf-field">
+          <label for="peSetting" data-i18n="settingLabel">Setting (optional)</label>
+          <select id="peSetting">
+            <option value="" data-i18n="settingDefault">Not specified</option>
+            <option data-i18n="settingClassroom">Classroom</option>
+            <option data-i18n="settingHomework">Homework</option>
+            <option data-i18n="settingSocial">Social situations</option>
+            <option data-i18n="settingTransitions">Transitions</option>
+            <option data-i18n="settingTesting">Testing</option>
+            <option data-i18n="settingOther">Other</option>
+          </select>
+        </div>
+        <div class="pf-field">
+          <label for="peGradeYear" data-i18n="gradeYearLabel">Grade / School year (optional)</label>
+          <input type="text" id="peGradeYear" data-i18n-placeholder="gradeYearPlaceholder" placeholder="e.g. Grade 4, 2024-25">
+        </div>
+        <div class="pf-field">
+          <label for="peNote" data-i18n="notesLabel">Notes (optional)</label>
+          <textarea id="peNote" data-i18n-placeholder="notesPlaceholder" placeholder="e.g. helped most on math tests, less on reading"></textarea>
+        </div>
+        <button class="add-entry-btn" onclick="addPassportEntry()" data-i18n="addBtn">+ Add to Passport</button>
+        <p class="pf-error" id="passportError"></p>
+        <div class="passport-id-note" id="passportIdNote"></div>
+      </div>
+
+      <div class="reveal">
+        <div class="passport-summary-row" id="passportStats" style="display:none;">
+          <div class="ps-stat sage"><div class="ps-num" id="statWorks">0</div><div class="ps-label" data-i18n="passportWorksLabel">Strategies that worked</div></div>
+          <div class="ps-stat amber"><div class="ps-num" id="statNoworks">0</div><div class="ps-label" data-i18n="passportRuledOutLabel">Ruled out</div></div>
+          <div class="ps-stat"><div class="ps-num" id="statTotal">0</div><div class="ps-label" data-i18n="passportTotalLabel">Total logged</div></div>
+        </div>
+        <div class="passport-timeline" id="passportList">
+          <div class="passport-empty">Nothing logged yet. Add the first thing that has worked, or has not, using the form on the left.</div>
+        </div>
+        <div class="passport-actions" id="passportActions" style="display:none;">
+          <button class="btn-download" onclick="downloadPassportPdf()" data-i18n="passportDownloadBtn">⬇ Download as PDF</button>
+          <button class="btn-clear" onclick="clearPassport()" data-i18n="passportClearBtn">Clear all</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== GUIDES ===== -->
+<section class="section" id="guides">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow" data-i18n="guidesEyebrow">Learn more</div>
+      <h2 data-i18n="guidesH2">Guides for every step of the process</h2>
+      <p data-i18n="guidesP">Whether you're just noticing something feels off or you're preparing for a formal IEP meeting, these starting points are written for parents, not lawyers.</p>
+    </div>
+    <div class="guides-grid reveal">
+      <a href="#start-here" class="guide-card" style="text-decoration:none;">
+        <div class="guide-icon">🚦</div>
+        <h4 data-i18n="guide1Title">New to this? Start here.</h4>
+        <p data-i18n="guide1Desc">Not sure where to begin? A plain-English overview of the IEP process, from first concern to formal evaluation.</p>
+        <div class="guide-link" data-i18n="guide1Link">Read the guide</div>
+      </a>
+      <a href="#screener" class="guide-card" style="text-decoration:none;">
+        <div class="guide-icon">🔍</div>
+        <h4 data-i18n="guide2Title">Should I request an evaluation?</h4>
+        <p data-i18n="guide2Desc">Answer 27 questions about your child's school experience and get a plain-language reflection to help you decide.</p>
+        <div class="guide-link" data-i18n="guide2Link">Take the screener</div>
+      </a>
+      <a href="#navigator" class="guide-card" style="text-decoration:none;">
+        <div class="guide-icon">⚖️</div>
+        <h4 data-i18n="guide3Title">Know your rights under IDEA and 504</h4>
+        <p data-i18n="guide3Desc">What the law actually says, specific to your state, grade, and situation, with the statute citations.</p>
+        <div class="guide-link" data-i18n="guide3Link">Check your rights</div>
+      </a>
+      <a href="#navigator" class="guide-card" onclick="switchToExplain(); return true;" style="text-decoration:none;">
+        <div class="guide-icon">📄</div>
+        <h4 data-i18n="guide4Title">Understand an IEP or 504 plan</h4>
+        <p data-i18n="guide4Desc">Paste your child's document and get a plain-English breakdown: what it grants, and what may be missing.</p>
+        <div class="guide-link" data-i18n="guide4Link">Explain my document</div>
+      </a>
+      <a href="#passport" class="guide-card" style="text-decoration:none;">
+        <div class="guide-icon">🎒</div>
+        <h4 data-i18n="guide5Title">Build your child's Passport</h4>
+        <p data-i18n="guide5Desc">A portable record of what has and hasn't worked, built by you, owned by you, and follows your child across schools.</p>
+        <div class="guide-link" data-i18n="guide5Link">Start the Passport</div>
+      </a>
+      <div class="guide-card" style="background:var(--cream-deep); cursor:default;" onclick="">
+        <div class="guide-icon" style="background:rgba(26,56,40,0.05);">✉️</div>
+        <h4 data-i18n="guide6Title">Draft a letter with the right language</h4>
+        <p data-i18n="guide6Desc">A clear, formal request you can review, edit, and send to your school. Generated from your specific situation.</p>
+        <div class="guide-link" style="color:var(--charcoal-soft);" data-i18n="guide6Link">Included with rights check</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== START HERE ===== -->
+<section class="section section-alt" id="start-here">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow" data-i18n="iepEyebrow">IEP 101</div>
+      <h2 data-i18n="iepH2">New to this? Here's what to know first.</h2>
+      <p data-i18n="iepP">Many parents notice something is off before the school ever brings it up. That instinct is worth trusting. Here's what you can do about it, and how the IEP process actually works.</p>
+    </div>
+
+    <div class="start-here-layout reveal">
+      <div>
+        <div style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--charcoal-soft); margin-bottom:16px;" data-i18n="iepFourThings">Four things every parent should know</div>
+        <div class="start-facts">
+          <div class="start-fact">
+            <div class="start-fact-num">01</div>
+            <p data-i18n="iepFact1">You do not need a diagnosis to request an evaluation. A concern is enough.</p>
+          </div>
+          <div class="start-fact">
+            <div class="start-fact-num">02</div>
+            <p data-i18n="iepFact2">You can make this request yourself, in writing, at any time. You don't need to wait.</p>
+          </div>
+          <div class="start-fact">
+            <div class="start-fact-num">03</div>
+            <p data-i18n="iepFact3">The school must respond. Public school evaluations are free. You cannot be billed.</p>
+          </div>
+          <div class="start-fact">
+            <div class="start-fact-num">04</div>
+            <p data-i18n="iepFact4">You are a full member of the IEP team. Your observations and input matter legally.</p>
+          </div>
+        </div>
+        <div style="background:var(--white); border:1px solid var(--line); border-radius:14px; padding:22px 20px;">
+          <div style="font-size:13px; color:var(--charcoal-soft); line-height:1.7;" data-i18n="iepBoxText">
+            When you request an evaluation in writing, the school's response timeline starts from that date. Send your request by email so you have a clear record of when it was received. If the school declines to evaluate, they must provide a written explanation, and you have the right to dispute it.
+          </div>
+          <div style="margin-top:14px;">
+            <a href="#navigator" class="btn-primary" style="font-size:14px; padding:11px 20px;" data-i18n="iepBoxCta">Check your specific rights →</a>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--charcoal-soft); margin-bottom:20px;" data-i18n="iepProcessLabel">What the IEP process looks like</div>
+        <div class="start-steps">
+          <div class="start-step">
+            <div class="step-num">1</div>
+            <div>
+              <h4 data-i18n="iepStep1Title">Talk to the teacher first</h4>
+              <p data-i18n="iepStep1Desc">Share what you're observing at home. Ask what the teacher is seeing in the classroom. Keep the conversation specific: what subjects, what situations, what behaviors.</p>
+            </div>
+          </div>
+          <div class="start-step">
+            <div class="step-num">2</div>
+            <div>
+              <h4 data-i18n="iepStep2Title">Write down what you're noticing</h4>
+              <p data-i18n="iepStep2Desc">Keep a simple log with dates and specific observations. Over time, patterns become clearer, and this documentation helps if you move toward a formal evaluation.</p>
+            </div>
+          </div>
+          <div class="start-step">
+            <div class="step-num">3</div>
+            <div>
+              <h4 data-i18n="iepStep3Title">Request an evaluation in writing</h4>
+              <p data-i18n="iepStep3Desc">Send an email to the principal or special education coordinator. You don't need to use any specific language. A clear written request is enough. The school must respond.</p>
+            </div>
+          </div>
+          <div class="start-step">
+            <div class="step-num">4</div>
+            <div>
+              <h4 data-i18n="iepStep4Title">Stay in the room. You are part of the team.</h4>
+              <p data-i18n="iepStep4Desc">If your child qualifies for an IEP, you are a legal member of the team that writes it. You don't have to agree or sign on the day of the meeting. Take your time.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="section" id="how">
+  <div class="wrap">
+    <div class="section-head center reveal" style="margin: 0 auto 64px;">
+      <div class="eyebrow" style="margin: 0 auto 18px; display: table;" data-i18n="howEyebrow">No attorney required</div>
+      <h2 data-i18n="howH2">Three steps. No legal degree needed.</h2>
+    </div>
+    <div class="steps-row reveal">
+      <div class="step-card">
+        <div class="step-icon">📍</div>
+        <h3 data-i18n="howStep1Title">Tell us where you are</h3>
+        <p data-i18n="howStep1Desc">State, grade, and what's going on. That's it.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">📖</div>
+        <h3 data-i18n="howStep2Title">Read your rights, in plain English</h3>
+        <p data-i18n="howStep2Desc">What the law actually guarantees, cited directly from the statute, with nothing lost in translation.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon">✉️</div>
+        <h3 data-i18n="howStep3Title">Draft a letter with the right language</h3>
+        <p data-i18n="howStep3Desc">A clear, formal request you can review, edit, and send to your school.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-band">
+  <div class="wrap">
+    <h2 class="reveal" data-i18n="ctaH2">You shouldn't need a lawyer to read a law written for your kid.</h2>
+    <p class="reveal" data-i18n="ctaP">Legible is free, and it always will be.</p>
+    <a href="#screener" class="btn-primary reveal" data-i18n="ctaCta">Find out where to start →</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="logo"><span class="mark">L</span>Legible</div>
+    <div class="footer-links">
+      <a onclick="openModal('privacy-modal')">Privacy Policy</a>
+      <a onclick="openModal('terms-modal')">Terms of Use</a>
+    </div>
+    <p class="footer-disclaimer">Legible provides educational information and self-advocacy tools for IEP and 504 support. Legible is not a law firm, medical provider, school district, or substitute for professional advice. AI-generated explanations and letters may contain errors and should be reviewed before use. Do not upload or paste private documents unless you have permission to do so. Laws and policies can change — always verify current information with a qualified professional.</p>
+  </div>
+</footer>
+
+<!-- ===== PRIVACY MODAL ===== -->
+<div class="modal-overlay" id="privacy-modal" onclick="closeModalOutside(event, 'privacy-modal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('privacy-modal')">✕</button>
+    <h2>Privacy Policy</h2>
+    <p class="modal-date">Effective June 2026</p>
+
+    <h3>What Legible does not collect</h3>
+    <p>Legible does not collect, store, or sell personal information. There are no user accounts, no sign-ups, no tracking cookies, and no third-party analytics. We do not know who you are, where you live, or anything about your child.</p>
+
+    <h3>Rights checker and document analysis</h3>
+    <p>When you submit a request to the rights checker or paste an IEP/504 document for analysis, that text is transmitted over HTTPS to our server and then to Anthropic's API (claude.ai) to generate a response. The text is used only for that single request. It is not written to any database, not logged to any file, and not retained on our servers. Once the response is returned to your browser, the text is gone from our infrastructure.</p>
+    <p>Anthropic may process and retain inputs per their own privacy policy and usage policies. We recommend not pasting documents that contain your child's full name, student ID, or other sensitive identifiers. Replace those details with placeholders before pasting if possible.</p>
+
+    <h3>Letter generation</h3>
+    <p>When you generate an accommodation letter, the state, grade level, disability category, and any additional context you entered are sent to Anthropic's API. The same one-time-use, no-retention policy applies. Generated letters exist only in your browser until you download the PDF.</p>
+
+    <h3>The Passport</h3>
+    <p>Passport data is stored exclusively in your own browser using <code>localStorage</code>. It is never transmitted to any server. It lives on your device and only your device. Clearing browser data or switching browsers will remove it. Use "Download as PDF" to keep a copy.</p>
+
+    <h3>The screener</h3>
+    <p>All 27 screener questions are answered and scored entirely inside your browser. Nothing is sent to any server at any point.</p>
+
+    <h3>Server logs</h3>
+    <p>Our server logs HTTP request metadata (method, path, timestamp, IP address) for operational purposes only. Pasted document content and personal details entered into forms are explicitly not logged and are not present in server logs.</p>
+
+    <h3>Third-party services</h3>
+    <p>The only third-party service used is Anthropic's API for AI-generated responses. No advertising networks, analytics providers, or data brokers receive any data from Legible.</p>
+
+    <h3>Children's privacy</h3>
+    <p>Legible is intended for use by parents and guardians, not children directly. We do not knowingly collect information from children under 13.</p>
+
+    <h3>Changes</h3>
+    <p>If we change this policy in a meaningful way, we will update the effective date above.</p>
+  </div>
+</div>
+
+<!-- ===== TERMS MODAL ===== -->
+<div class="modal-overlay" id="terms-modal" onclick="closeModalOutside(event, 'terms-modal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('terms-modal')">✕</button>
+    <h2>Terms of Use</h2>
+    <p class="modal-date">Effective June 2026</p>
+
+    <h3>Not legal advice</h3>
+    <p>Legible provides general educational information about special education law in the United States. <strong>Nothing on this site constitutes legal advice.</strong> Using Legible does not create an attorney-client relationship of any kind. Legible is not a law firm and does not employ attorneys.</p>
+    <p>Laws vary by state, and individual circumstances vary significantly. For disputes with a school district, evaluation denials, due process hearings, or any formal legal matter, consult a qualified special education attorney or advocate in your area.</p>
+
+    <h3>Accuracy of information</h3>
+    <p>We work to keep information accurate, but we cannot guarantee that every AI-generated response reflects the current state of the law in your jurisdiction. Federal law citations are based on IDEA (20 U.S.C. § 1400 et seq.) and Section 504 of the Rehabilitation Act (29 U.S.C. § 794). State-specific timelines and procedures are generated by an AI model and may not capture every local rule. Always verify important information with a qualified professional before acting on it.</p>
+
+    <h3>AI-generated content</h3>
+    <p>Rights summaries, document analyses, and accommodation letters are generated by Claude, an AI model by Anthropic. AI makes mistakes. Read all generated letters carefully before sending. Do not rely solely on AI-generated content for formal legal decisions.</p>
+
+    <h3>No warranties</h3>
+    <p>Legible is provided "as is" and "as available" without warranties of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.</p>
+
+    <h3>Limitation of liability</h3>
+    <p>To the fullest extent permitted by applicable law, Legible and its operators shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of data, loss of opportunity, or harm arising from reliance on information provided by this site, even if advised of the possibility of such damages. Your sole remedy for dissatisfaction with the site or its content is to stop using it.</p>
+
+    <h3>Acceptable use</h3>
+    <ul>
+      <li>You may use Legible for personal, non-commercial purposes.</li>
+      <li>Do not paste documents unless you have the right to share their contents.</li>
+      <li>Do not attempt to reverse-engineer, scrape, or automate requests to this service.</li>
+      <li>Do not use Legible to generate content you will misrepresent as original legal work.</li>
+    </ul>
+
+    <h3>Governing law</h3>
+    <p>These terms are governed by the laws of the United States. If any provision is found unenforceable, the remaining provisions continue in full force.</p>
+
+    <h3>Changes</h3>
+    <p>We may update these terms at any time. Continued use of the site after changes are posted constitutes acceptance of the revised terms.</p>
+  </div>
+</div>
+
+<script>
+  const BACKEND_URL = window.LEGIBLE_BACKEND_URL || "http://localhost:3001";
+  let currentLanguage = 'en';
+
+  const STATES = ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"];
+  const stateSelect = document.getElementById('state');
+  STATES.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s; opt.textContent = s;
+    if (s === "Virginia") opt.selected = true;
+    stateSelect.appendChild(opt);
+  });
+
+  // Tab switching
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const target = tab.dataset.tab;
+      document.getElementById('tab-check').style.display = target === 'check' ? 'block' : 'none';
+      document.getElementById('tab-upload').style.display = target === 'upload' ? 'block' : 'none';
+    });
+  });
+
+  function switchToExplain() {
+    document.getElementById('navigator').scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('explain-tab').classList.add('active');
+      document.getElementById('tab-check').style.display = 'none';
+      document.getElementById('tab-upload').style.display = 'block';
+    }, 400);
+  }
+
+  let lastResult = null;
+
+  function applyLanguage(lang) {
+    currentLanguage = lang;
+    document.getElementById('langSelect').value = lang;
+    document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
+
+    const t = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[lang]) ? UI_TRANSLATIONS[lang] : UI_TRANSLATIONS['en'];
+
+    // Update all data-i18n elements
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if (t[key] !== undefined) el.textContent = t[key];
+    });
+
+    // Update placeholders
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.dataset.i18nPlaceholder;
+      if (t[key] !== undefined) el.placeholder = t[key];
+    });
+
+    // Hero h1 has an <em> inside it — handle specially
+    const heroH1 = document.getElementById('heroH1');
+    if (heroH1) heroH1.innerHTML = `${t.heroH1}<br><em>${t.heroH1em}</em>`;
+
+    // Grade select options
+    const gradeEl = document.getElementById('grade');
+    if (gradeEl) {
+      const gradeKeys = ['gradePreschool','gradeElementary','gradeMiddle','gradeHigh'];
+      Array.from(gradeEl.options).forEach((opt, i) => { if (t[gradeKeys[i]]) opt.textContent = t[gradeKeys[i]]; });
+    }
+
+    // Disability select options (values stay English for RIGHTS_TRANSLATIONS lookup)
+    const disEl = document.getElementById('disability');
+    if (disEl) {
+      const disKeys = ['disabilityADHD','disabilityDyslexia','disabilityAutism','disabilityMentalHealth',
+        'disabilityHearing','disabilityVision','disabilitySpeech','disabilityPhysical',
+        'disabilityChronic','disabilityProcessing','disabilityNotSure','disabilityOther'];
+      Array.from(disEl.options).forEach((opt, i) => { if (t[disKeys[i]]) opt.textContent = t[disKeys[i]]; });
+    }
+
+    // Setting select options
+    const settingEl = document.getElementById('peSetting');
+    if (settingEl) {
+      const settingKeys = ['settingDefault','settingClassroom','settingHomework','settingSocial','settingTransitions','settingTesting','settingOther'];
+      Array.from(settingEl.options).forEach((opt, i) => { if (t[settingKeys[i]]) opt.textContent = t[settingKeys[i]]; });
+    }
+
+    // genBtnText — only if not currently loading
+    const genBtnText = document.getElementById('genBtnText');
+    if (genBtnText && !document.getElementById('genSpinner').classList.contains('show')) {
+      genBtnText.textContent = t.genBtnText;
+    }
+
+    // docBtnText — only if not loading
+    const docBtnText = document.getElementById('docBtnText');
+    if (docBtnText && !document.getElementById('docSpinner').classList.contains('show')) {
+      docBtnText.textContent = t.docBtnText;
+    }
+
+    // Non-English rights disclaimer
+    const disc = document.getElementById('langDisclaimer');
+    if (disc) {
+      if (lang !== 'en' && t.rightsDisclaimer) {
+        disc.textContent = t.rightsDisclaimer;
+        disc.style.display = 'block';
+      } else {
+        disc.style.display = 'none';
+      }
+    }
+
+    // Passport empty state
+    if (typeof passportEntries !== 'undefined' && passportEntries.length === 0) {
+      const pl = document.getElementById('passportList');
+      if (pl) pl.innerHTML = `<div class="passport-empty">${t.passportEmpty}</div>`;
+    }
+
+    // Re-render screener if questions are visible
+    if (document.getElementById('screener-questions') && document.getElementById('screener-questions').style.display !== 'none') {
+      screenerRenderCategory();
+    }
+
+    // Hide previous rights result when language changes
+    document.getElementById('result').classList.remove('show');
+  }
+
+  function renderRightsResult(parsed, dir) {
+    const resultBox = document.getElementById('result');
+    resultBox.setAttribute('dir', dir || 'ltr');
+    document.getElementById('resultHeading').textContent = parsed.heading;
+    const list = document.getElementById('resultList');
+    list.innerHTML = '';
+    parsed.points.forEach(point => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="check">✓</span><span>${point}</span>`;
+      list.appendChild(li);
+    });
+    document.getElementById('resultCite').textContent = parsed.citation;
+    resultBox.classList.add('show');
+    resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  async function generateRights() {
+    const state = document.getElementById('state').value;
+    const grade = document.getElementById('grade').value;
+    const disability = document.getElementById('disability').value;
+    const extra = document.getElementById('extraDetails').value.trim();
+    const lang = currentLanguage;
+    const btn = document.getElementById('genBtn');
+    const spinner = document.getElementById('genSpinner');
+    const btnText = document.getElementById('genBtnText');
+    const errorMsg = document.getElementById('errorMsg');
+    const t = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[lang]) ? UI_TRANSLATIONS[lang] : UI_TRANSLATIONS['en'];
+
+    btn.disabled = true;
+    spinner.classList.add('show');
+    btnText.textContent = t.genBtnLoading;
+    errorMsg.classList.remove('show');
+    document.getElementById('result').classList.remove('show');
+
+    try {
+      const translations = typeof RIGHTS_TRANSLATIONS !== 'undefined' ? RIGHTS_TRANSLATIONS : null;
+      const staticData = lang !== 'en' && translations?.[lang]?.[disability]
+        ? translations[lang][disability] : null;
+
+      if (staticData) {
+        const dir = translations[lang]._dir || 'ltr';
+        lastResult = { ...staticData, state, grade, disability, letterBody: '' };
+        renderRightsResult(staticData, dir);
+      } else {
+        const response = await fetch(`${BACKEND_URL}/api/rights`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ state, grade, disability, extra })
+        });
+        if (!response.ok) throw new Error("API error");
+        const parsed = await response.json();
+        lastResult = { ...parsed, state, grade, disability };
+        renderRightsResult(parsed, 'ltr');
+      }
+    } catch (err) {
+      console.error(err);
+      errorMsg.textContent = t.errorMsg;
+      errorMsg.classList.add('show');
+    } finally {
+      btn.disabled = false;
+      spinner.classList.remove('show');
+      btnText.textContent = t.genBtnText;
+    }
+  }
+
+  async function downloadLetter() {
+    if (!lastResult) return;
+    const btn = document.getElementById('letterBtn');
+    const t = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : UI_TRANSLATIONS['en'];
+    const origText = t.letterBtn;
+
+    if (!lastResult.letterBody) {
+      btn.textContent = t.letterDrafting;
+      btn.disabled = true;
+      try {
+        const r = await fetch(`${BACKEND_URL}/api/letter`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            state: lastResult.state,
+            grade: lastResult.grade,
+            disability: lastResult.disability,
+            extra: document.getElementById('extraDetails').value.trim(),
+            citation: lastResult.citation
+          })
+        });
+        if (!r.ok) throw new Error();
+        const d = await r.json();
+        lastResult.letterBody = d.letterBody;
+      } catch {
+        btn.textContent = t.letterError;
+        btn.disabled = false;
+        setTimeout(() => { btn.textContent = origText; }, 2500);
+        return;
+      }
+      btn.textContent = origText;
+      btn.disabled = false;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: "pt", format: "letter" });
+    const margin = 64;
+    const maxWidth = 612 - margin * 2;
+    let y = 72;
+
+    doc.setFont("times", "normal"); doc.setFontSize(11);
+    doc.text(new Date().toLocaleDateString(), margin, y); y += 28;
+    doc.text("[Your Name]", margin, y); y += 16;
+    doc.text("[Your Address]", margin, y); y += 16;
+    doc.text(`${lastResult.state}`, margin, y); y += 32;
+    doc.text("[School Name]", margin, y); y += 16;
+    doc.text("Re: Request for Evaluation / Accommodations for [Child's Name]", margin, y); y += 32;
+
+    const bodyLines = doc.splitTextToSize(lastResult.letterBody, maxWidth);
+    doc.text(bodyLines, margin, y);
+    y += bodyLines.length * 14 + 28;
+    doc.text("Sincerely,", margin, y); y += 16;
+    doc.text("[Your Name]", margin, y); y += 28;
+    doc.setFontSize(9); doc.setTextColor(120, 120, 120);
+    const citeLines = doc.splitTextToSize(lastResult.citation, maxWidth);
+    doc.text(citeLines, margin, y);
+    doc.save("accommodation-request-letter.pdf");
+  }
+
+  async function analyzeDocument() {
+    const text = document.getElementById('docPaste').value.trim();
+    const btn = document.getElementById('docBtn');
+    const spinner = document.getElementById('docSpinner');
+    const btnText = document.getElementById('docBtnText');
+    const errorMsg = document.getElementById('docErrorMsg');
+
+    const tDoc = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : UI_TRANSLATIONS['en'];
+    if (text.length < 20) {
+      errorMsg.textContent = tDoc.docErrorShort;
+      errorMsg.classList.add('show');
+      return;
+    }
+
+    btn.disabled = true;
+    spinner.classList.add('show');
+    btnText.textContent = tDoc.docBtnLoading;
+    errorMsg.classList.remove('show');
+    document.getElementById('docResult').classList.remove('show');
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/analyze-document`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pastedText: text })
+      });
+      if (!response.ok) throw new Error("API error");
+      const parsed = await response.json();
+
+      document.getElementById('docSummary').textContent = parsed.summary;
+      const accList = document.getElementById('docAccommodations');
+      accList.innerHTML = '';
+      parsed.accommodations.forEach(a => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="check">✓</span><span>${a}</span>`;
+        accList.appendChild(li);
+      });
+      const concernsWrap = document.getElementById('docConcernsWrap');
+      const concernsList = document.getElementById('docConcerns');
+      if (parsed.concerns && parsed.concerns.length > 0) {
+        concernsList.innerHTML = '';
+        parsed.concerns.forEach(c => {
+          const li = document.createElement('li');
+          li.innerHTML = `<span class="check" style="color:#a93226;">!</span><span>${c}</span>`;
+          concernsList.appendChild(li);
+        });
+        concernsWrap.style.display = 'block';
+      } else {
+        concernsWrap.style.display = 'none';
+      }
+      document.getElementById('docResult').classList.add('show');
+      document.getElementById('docPaste').value = '';
+    } catch (err) {
+      console.error(err);
+      errorMsg.textContent = tDoc.docError;
+      errorMsg.classList.add('show');
+    } finally {
+      btn.disabled = false;
+      spinner.classList.remove('show');
+      btnText.textContent = tDoc.docBtnText;
+    }
+  }
+
+  // ========== SCREENER ==========
+  const SCREENER_CATEGORIES = [
+    {
+      label: "A. Learning and Academics",
+      title: "Learning and Academics",
+      icon: "📚",
+      questions: [
+        "Does your child struggle much more than expected with reading, writing, or math?",
+        "Does your child need repeated help to complete schoolwork that peers can do more independently?",
+        "Has your child fallen behind academically despite extra effort or help?",
+        "Does your child avoid or resist schoolwork significantly more than peers?",
+        "Does your child have trouble keeping up in class even with extra support?"
+      ]
+    },
+    {
+      label: "B. Communication",
+      title: "Communication",
+      icon: "💬",
+      questions: [
+        "Is your child hard for teachers or other adults to understand?",
+        "Does your child struggle to express thoughts, needs, or ideas clearly?",
+        "Does your child have trouble understanding directions or spoken language?",
+        "Does your child seem frustrated when trying to communicate at school?"
+      ]
+    },
+    {
+      label: "C. Attention and Behavior",
+      title: "Attention and Behavior",
+      icon: "🎯",
+      questions: [
+        "Does your child have significant trouble focusing, staying seated, or finishing tasks?",
+        "Does your child have frequent meltdowns, shutdowns, or difficulty recovering during the school day?",
+        "Does behavior interfere with learning on a regular basis?",
+        "Does your child act impulsively in ways that affect their schoolwork or relationships?",
+        "Does your child seem significantly more restless or inattentive than peers?"
+      ]
+    },
+    {
+      label: "D. Social Interaction",
+      title: "Social Interaction",
+      icon: "🤝",
+      questions: [
+        "Does your child avoid peers or seem unsure how to interact socially?",
+        "Does your child struggle to read social cues or join group activities?",
+        "Does your child seem isolated compared with peers?",
+        "Does your child have difficulty making or keeping friendships?"
+      ]
+    },
+    {
+      label: "E. Sensory or Motor Concerns",
+      title: "Sensory or Motor Concerns",
+      icon: "✋",
+      questions: [
+        "Does your child seem unusually overwhelmed by noise, clothing, movement, or transitions?",
+        "Does your child struggle with fine motor tasks like writing, cutting, or buttoning?",
+        "Does your child have coordination or movement difficulties that affect school tasks?",
+        "Does your child seek or avoid certain sensory experiences in ways that disrupt their day?"
+      ]
+    },
+    {
+      label: "F. Daily School Functioning",
+      title: "Daily School Functioning",
+      icon: "🏫",
+      questions: [
+        "Does your child need much more support than peers to stay organized or complete tasks?",
+        "Does your child have difficulty following routines or transitions at school?",
+        "Does school seem to take an unusually high emotional toll on your child?",
+        "Does your child frequently forget materials, assignments, or instructions?",
+        "Does your child seem to work much harder than peers just to keep up?"
+      ]
+    }
+  ];
+
+  let screenerAnswers = []; // array of arrays per category
+  let screenerCurrent = 0;
+
+  function getScreenerCats() {
+    const t = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : null;
+    return (t && t.screenerCategories) ? t.screenerCategories : SCREENER_CATEGORIES;
+  }
+
+  function screenerStart() {
+    screenerAnswers = getScreenerCats().map(c => new Array(c.questions.length).fill(null));
+    screenerCurrent = 0;
+    document.getElementById('screener-landing').style.display = 'none';
+    document.getElementById('screener-questions').style.display = 'block';
+    screenerRenderCategory();
+  }
+
+  function screenerRenderCategory() {
+    const cats = getScreenerCats();
+    const cat = cats[screenerCurrent];
+    const total = cats.length;
+    const pct = (screenerCurrent / total) * 100;
+    const t = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : UI_TRANSLATIONS['en'];
+
+    const counterText = t.screenerCategoryOf.replace('{0}', screenerCurrent + 1).replace('{1}', total);
+    document.getElementById('screener-cat-counter').textContent = counterText;
+    document.getElementById('screener-answered-counter').textContent = cat.label;
+    document.getElementById('screener-fill').style.width = pct + '%';
+    document.getElementById('screener-cat-label').textContent = cat.icon + '  ' + cat.label;
+    document.getElementById('screener-cat-title').textContent = cat.title;
+
+    const list = document.getElementById('screener-q-list');
+    list.innerHTML = cat.questions.map((q, i) => {
+      const ans = screenerAnswers[screenerCurrent][i];
+      return `
+        <div class="screener-q-item ${ans !== null ? 'answered' : ''}" id="sq-item-${i}">
+          <div class="screener-q-text">${q}</div>
+          <div class="screener-q-btns">
+            <button class="sq-btn ${ans === 2 ? 'sel-yes' : ''}" onclick="screenerAnswer(${i}, 2)">${t.screenerYes}</button>
+            <button class="sq-btn ${ans === 1 ? 'sel-sometimes' : ''}" onclick="screenerAnswer(${i}, 1)">${t.screenerSometimes}</button>
+            <button class="sq-btn ${ans === 0 ? 'sel-no' : ''}" onclick="screenerAnswer(${i}, 0)">${t.screenerNo}</button>
+          </div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('screener-back-btn').style.visibility = screenerCurrent === 0 ? 'hidden' : 'visible';
+    document.getElementById('screener-back-btn').textContent = t.screenerBack;
+    const isLast = screenerCurrent === cats.length - 1;
+    document.getElementById('screener-next-btn').textContent = isLast ? t.screenerSeeResults : t.screenerNext;
+    screenerUpdateNext();
+  }
+
+  function screenerAnswer(qIdx, val) {
+    screenerAnswers[screenerCurrent][qIdx] = val;
+    screenerRenderCategory();
+  }
+
+  function screenerUpdateNext() {
+    const allAnswered = screenerAnswers[screenerCurrent].every(a => a !== null);
+    document.getElementById('screener-next-btn').disabled = !allAnswered;
+  }
+
+  function screenerNext() {
+    const cats = getScreenerCats();
+    if (screenerCurrent < cats.length - 1) {
+      screenerCurrent++;
+      screenerRenderCategory();
+    } else {
+      screenerShowResult();
+    }
+  }
+
+  function screenerBack() {
+    if (screenerCurrent > 0) {
+      screenerCurrent--;
+      screenerRenderCategory();
+    }
+  }
+
+  function screenerShowResult() {
+    document.getElementById('screener-questions').style.display = 'none';
+    document.getElementById('screener-result').style.display = 'block';
+    const t = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : UI_TRANSLATIONS['en'];
+    const cats = getScreenerCats();
+
+    const catScores = cats.map((cat, i) => {
+      const score = screenerAnswers[i].reduce((s, a) => s + (a || 0), 0);
+      const max = cat.questions.length * 2;
+      return { name: cat.title, score, max, pct: score / max };
+    });
+    const total = catScores.reduce((s, c) => s + c.score, 0);
+
+    let tier = 'mild';
+    if (total >= 26) tier = 'strong';
+    else if (total >= 11) tier = 'moderate';
+    const hasHighCat = catScores.some(c => c.pct >= 0.70);
+    if (hasHighCat && tier === 'mild') tier = 'moderate';
+
+    const sorted = [...catScores].sort((a, b) => b.pct - a.pct);
+    const topCats = sorted.slice(0, 2).filter(c => c.score > 0).map(c => c.name);
+
+    const tierBadge = document.getElementById('screener-tier-badge');
+    tierBadge.className = `result-tier ${tier}`;
+    tierBadge.textContent = t[`tier${tier.charAt(0).toUpperCase()+tier.slice(1)}`];
+    document.getElementById('screener-headline').textContent = t[`tier${tier.charAt(0).toUpperCase()+tier.slice(1)}Headline`];
+
+    const topCatHtml = topCats.map(c => `<span class="screener-cat-tag">${c}</span>`).join('');
+    document.getElementById('screener-top-cats').innerHTML = topCatHtml
+      ? `<span style="font-size:13px;color:var(--charcoal-soft);margin-right:6px;">${t.screenerHighestConcerns}</span>${topCatHtml}` : '';
+
+    const catMention = topCats.length
+      ? `${t.particularlyIn}<strong>${topCats.join(t.andWord)}</strong>` : '';
+    const bodyKey = `tier${tier.charAt(0).toUpperCase()+tier.slice(1)}Body`;
+    document.getElementById('screener-body').innerHTML = t[bodyKey].replace('{catMention}', catMention);
+  }
+
+  function screenerReset() {
+    screenerAnswers = [];
+    screenerCurrent = 0;
+    document.getElementById('screener-result').style.display = 'none';
+    document.getElementById('screener-landing').style.display = 'grid';
+  }
+
+  // ========== PASSPORT ==========
+  let passportEntries = [];
+  let currentOutcome = null;
+  let passportId = null;
+  let memoryStore = {};
+
+  function localStorage_safe_get(key) {
+    try { return localStorage.getItem(key); } catch (e) { return memoryStore[key] || null; }
+  }
+  function localStorage_safe_set(key, val) {
+    try { localStorage.setItem(key, val); } catch (e) { memoryStore[key] = val; }
+  }
+
+  function getPassportId() {
+    let id = localStorage_safe_get('legible_passport_id');
+    if (!id) {
+      id = 'passport-' + Math.random().toString(36).slice(2, 10);
+      localStorage_safe_set('legible_passport_id', id);
+    }
+    return id;
+  }
+
+  function initPassport() {
+    passportId = getPassportId();
+    const tInit = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS['en']) ? UI_TRANSLATIONS['en'] : null;
+    document.getElementById('passportIdNote').textContent =
+      `${tInit ? tInit.passportIdPrefix : 'Passport ID: '}${passportId}${tInit ? tInit.passportIdSuffix : '. Your entries are saved in this browser. Download as PDF to keep a copy across devices.'}`;
+    const saved = localStorage_safe_get('passport_data_' + passportId);
+    if (saved) {
+      try { passportEntries = JSON.parse(saved); renderPassport(); } catch (e) { passportEntries = []; }
+    }
+  }
+
+  function setOutcome(outcome) {
+    currentOutcome = outcome;
+    document.getElementById('peWorksBtn').classList.toggle('selected', outcome === 'works');
+    document.getElementById('peWorksBtn').classList.toggle('works', outcome === 'works');
+    document.getElementById('peNoworksBtn').classList.toggle('selected', outcome === 'noworks');
+    document.getElementById('peNoworksBtn').classList.toggle('noworks', outcome === 'noworks');
+  }
+
+  function addPassportEntry() {
+    const strategy = document.getElementById('peStrategy').value.trim();
+    const note = document.getElementById('peNote').value.trim();
+    const setting = document.getElementById('peSetting').value;
+    const gradeYear = document.getElementById('peGradeYear').value.trim();
+    const errEl = document.getElementById('passportError');
+    errEl.classList.remove('show');
+
+    const tP = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : UI_TRANSLATIONS['en'];
+    if (!strategy && !currentOutcome) {
+      errEl.textContent = tP.passportErrBoth;
+      errEl.classList.add('show'); return;
+    }
+    if (!strategy) {
+      errEl.textContent = tP.passportErrStrategy;
+      errEl.classList.add('show'); return;
+    }
+    if (!currentOutcome) {
+      errEl.textContent = tP.passportErrOutcome;
+      errEl.classList.add('show'); return;
+    }
+
+    passportEntries.unshift({ strategy, note, setting, gradeYear, outcome: currentOutcome, date: new Date().toLocaleDateString() });
+    document.getElementById('peStrategy').value = '';
+    document.getElementById('peNote').value = '';
+    document.getElementById('peSetting').value = '';
+    document.getElementById('peGradeYear').value = '';
+    document.getElementById('passportError').classList.remove('show');
+    currentOutcome = null;
+    document.getElementById('peWorksBtn').classList.remove('selected', 'works');
+    document.getElementById('peNoworksBtn').classList.remove('selected', 'noworks');
+    renderPassport();
+    localStorage_safe_set('passport_data_' + passportId, JSON.stringify(passportEntries));
+  }
+
+  function deletePassportEntry(index) {
+    passportEntries.splice(index, 1);
+    renderPassport();
+    localStorage_safe_set('passport_data_' + passportId, JSON.stringify(passportEntries));
+  }
+
+  function clearPassport() {
+    if (!confirm('Clear all Passport entries? This cannot be undone.')) return;
+    passportEntries = [];
+    renderPassport();
+    try { localStorage.removeItem('passport_data_' + passportId); } catch (e) {}
+  }
+
+  function renderPassport() {
+    const list = document.getElementById('passportList');
+    const actions = document.getElementById('passportActions');
+    const stats = document.getElementById('passportStats');
+
+    if (passportEntries.length === 0) {
+      const tRp = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : UI_TRANSLATIONS['en'];
+      list.innerHTML = `<div class="passport-empty">${tRp.passportEmpty}</div>`;
+      actions.style.display = 'none';
+      stats.style.display = 'none';
+      return;
+    }
+
+    actions.style.display = 'flex';
+    stats.style.display = 'flex';
+    const worksCount = passportEntries.filter(e => e.outcome === 'works').length;
+    const noworksCount = passportEntries.filter(e => e.outcome === 'noworks').length;
+    document.getElementById('statWorks').textContent = worksCount;
+    document.getElementById('statNoworks').textContent = noworksCount;
+    document.getElementById('statTotal').textContent = passportEntries.length;
+
+    let lastEra = null;
+    list.innerHTML = passportEntries.map((e, i) => {
+      let eraHeader = '';
+      if (e.gradeYear && e.gradeYear !== lastEra) {
+        eraHeader = `<div class="pe-era-header">${escapeHtml(e.gradeYear)}</div>`;
+        lastEra = e.gradeYear;
+      }
+      return `${eraHeader}
+      <div class="pe-card ${e.outcome}">
+        <button class="pe-delete" onclick="deletePassportEntry(${i})">${(typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage].passportRemove : 'Remove'}</button>
+        <div class="pe-top">
+          <div class="pe-strategy">${escapeHtml(e.strategy)}</div>
+          <div class="pe-pill ${e.outcome}">${e.outcome === 'works' ? ((typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage].passportWorked : 'Worked') : ((typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage].passportDidNotWork : 'Did not work')}</div>
+        </div>
+        ${e.setting ? `<span class="pe-setting-tag">${escapeHtml(e.setting)}</span>` : ''}
+        ${e.note ? `<div class="pe-note">${escapeHtml(e.note)}</div>` : ''}
+        <span class="pe-date">${(typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage].passportAdded : 'Added '}${e.date}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function downloadPassportPdf() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: "pt", format: "letter" });
+    const margin = 56; const maxWidth = 612 - margin * 2;
+    let y = 64;
+    doc.setFont("times", "bold"); doc.setFontSize(20);
+    doc.text("Neurodiversity Passport", margin, y); y += 26;
+    doc.setFont("times", "normal"); doc.setFontSize(10); doc.setTextColor(100,100,100);
+    doc.text("A student-owned record of strategies, accommodations, and outcomes.", margin, y); y += 28;
+    doc.setTextColor(0,0,0);
+    let lastPdfEra = null;
+    passportEntries.forEach(e => {
+      if (y > 700) { doc.addPage(); y = 64; }
+      if (e.gradeYear && e.gradeYear !== lastPdfEra) {
+        doc.setFont("times", "italic"); doc.setFontSize(11); doc.setTextColor(100,100,100);
+        doc.text(e.gradeYear, margin, y); y += 18;
+        doc.setTextColor(0,0,0); lastPdfEra = e.gradeYear;
+      }
+      doc.setFont("times", "bold"); doc.setFontSize(13);
+      doc.text(e.strategy + "  (" + (e.outcome === 'works' ? "Worked" : "Did not work") + ")", margin, y); y += 18;
+      if (e.setting) {
+        doc.setFont("times", "italic"); doc.setFontSize(10); doc.setTextColor(80,80,80);
+        doc.text("Setting: " + e.setting, margin, y); y += 14; doc.setTextColor(0,0,0);
+      }
+      if (e.note) {
+        doc.setFont("times", "normal"); doc.setFontSize(11);
+        const lines = doc.splitTextToSize(e.note, maxWidth);
+        doc.text(lines, margin, y); y += lines.length * 14 + 6;
+      }
+      doc.setFontSize(9); doc.setTextColor(140,140,140);
+      doc.text("Added " + e.date, margin, y); doc.setTextColor(0,0,0); y += 24;
+    });
+    doc.save("neurodiversity-passport.pdf");
+  }
+
+  // ========== MODALS ==========
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeModalOutside(e, id) {
+    if (e.target === document.getElementById(id)) closeModal(id);
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => { m.classList.remove('open'); document.body.style.overflow = ''; });
+  });
+
+  // ========== INIT ==========
+  initPassport();
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
