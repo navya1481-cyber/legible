@@ -5,7 +5,28 @@ const path = require('path');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
-app.use(cors());
+
+const allowedOrigins = [
+  'https://getlegible.org',
+  'https://www.getlegible.org',
+  'https://legible-nn7i.onrender.com',
+  'http://localhost:3001',
+];
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) cb(null, true);
+    else cb(new Error('Not allowed by CORS'));
+  }
+}));
+
+// Redirect www to non-www
+app.use((req, res, next) => {
+  if (req.hostname === 'www.getlegible.org') {
+    return res.redirect(301, 'https://getlegible.org' + req.url);
+  }
+  next();
+});
+
 app.use(express.json({ limit: '2mb' }));
 app.use(express.static(__dirname));
 
