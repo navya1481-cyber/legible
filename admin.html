@@ -1,0 +1,225 @@
+<title>Legible Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root {
+    --green:  #1a3828;
+    --teal:   #1fa882;
+    --bg:     #f3faf7;
+    --surface:#ffffff;
+    --surf2:  #eaf4ef;
+    --border: #d0e8dc;
+    --text:   #111820;
+    --soft:   #4a5568;
+    --faint:  #8aa89c;
+    --red:    #c0392b;
+    --amber:  #d4832a;
+    --shadow: 0 1px 3px rgba(26,56,40,.07), 0 4px 16px rgba(26,56,40,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1f17; --surface: #162a1f; --surf2: #1d3829;
+      --border: #2a4a38; --text: #e8f4ee; --soft: #8abfa6; --faint: #4a7a62;
+    }
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); font-size:14px; line-height:1.5; }
+
+  header { background:var(--green); padding:18px 24px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .logo { display:flex; align-items:center; gap:10px; }
+  .mark { width:28px; height:28px; border-radius:6px; background:var(--teal); display:flex; align-items:center; justify-content:center; font-family:Georgia,serif; font-style:italic; font-weight:700; font-size:16px; color:#fff; }
+  header h1 { font-size:14px; font-weight:700; color:#fff; }
+  header p { font-size:11px; color:rgba(255,255,255,.45); margin-top:1px; }
+  .status-dot { width:8px; height:8px; border-radius:50%; background:#6ee7b7; display:inline-block; margin-right:6px; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .live-badge { font-size:11px; font-weight:600; color:rgba(255,255,255,.65); display:flex; align-items:center; }
+
+  main { max-width:1000px; margin:0 auto; padding:24px 18px 60px; }
+
+  /* Login */
+  #loginScreen { display:flex; align-items:center; justify-content:center; min-height:60vh; }
+  .login-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:36px; box-shadow:var(--shadow); max-width:360px; width:100%; text-align:center; }
+  .login-card h2 { font-size:18px; margin-bottom:6px; }
+  .login-card p { font-size:13px; color:var(--soft); margin-bottom:22px; }
+  .key-input { width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:9px; font-size:14px; font-family:monospace; background:var(--surf2); color:var(--text); }
+  .key-input:focus { outline:none; border-color:var(--teal); }
+  .btn-login { margin-top:12px; width:100%; background:var(--green); color:#fff; border:none; border-radius:9px; padding:11px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .btn-login:hover { background:#266040; }
+  .err { margin-top:10px; font-size:12px; color:var(--red); }
+
+  /* Dashboard */
+  #dashboard { display:none; }
+  .stat-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-bottom:22px; }
+  .stat { background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:14px 16px; box-shadow:var(--shadow); }
+  .stat .n { font-family:Georgia,serif; font-size:30px; font-weight:700; color:var(--green); line-height:1; font-variant-numeric:tabular-nums; }
+  @media (prefers-color-scheme:dark) { .stat .n { color:var(--teal); } }
+  .stat .lbl { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--soft); margin-top:4px; font-weight:600; }
+
+  /* Feed */
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:13px; padding:20px; box-shadow:var(--shadow); }
+  .card-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .card-head h2 { font-size:13px; font-weight:700; }
+  .refresh-btn { background:var(--surf2); border:1px solid var(--border); border-radius:7px; padding:5px 12px; font-size:11.5px; font-weight:600; cursor:pointer; color:var(--soft); font-family:inherit; }
+  .refresh-btn:hover { color:var(--text); }
+
+  .feed { display:flex; flex-direction:column; gap:8px; }
+  .event-row { display:flex; align-items:flex-start; gap:12px; padding:10px 12px; border-radius:9px; background:var(--surf2); }
+  .event-row.success { border-left:3px solid var(--teal); }
+  .event-row.fail    { border-left:3px solid var(--red); }
+  .type-badge {
+    display:inline-flex; align-items:center; justify-content:center;
+    border-radius:6px; padding:3px 8px; font-size:10.5px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; flex-shrink:0;
+  }
+  .type-rights  { background:#d1fae5; color:#065f46; }
+  .type-letter  { background:#dbeafe; color:#1e40af; }
+  .type-analyze { background:#ede9fe; color:#4c1d95; }
+  @media (prefers-color-scheme:dark) {
+    .type-rights  { background:#064e3b; color:#6ee7b7; }
+    .type-letter  { background:#1e3a5f; color:#93c5fd; }
+    .type-analyze { background:#2e1065; color:#c4b5fd; }
+  }
+  .event-meta { flex:1; min-width:0; }
+  .event-main { font-size:13px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .event-time { font-size:11px; color:var(--faint); margin-top:2px; }
+  .fail-mark { font-size:11px; color:var(--red); font-weight:700; }
+
+  .empty { text-align:center; padding:40px; color:var(--faint); font-size:13px; }
+  .server-note { font-size:11.5px; color:var(--soft); margin-top:14px; text-align:center; font-style:italic; }
+</style>
+
+<header>
+  <div class="logo">
+    <div class="mark">L</div>
+    <div>
+      <h1>Legible Admin</h1>
+      <p>Real-time activity log</p>
+    </div>
+  </div>
+  <div class="live-badge"><span class="status-dot"></span><span id="liveLabel">Live</span></div>
+</header>
+
+<main>
+
+  <div id="loginScreen">
+    <div class="login-card">
+      <h2>Admin access</h2>
+      <p>Enter your admin key to view live activity.</p>
+      <input class="key-input" type="password" id="keyInput" placeholder="Admin key" autocomplete="off">
+      <button class="btn-login" onclick="login()">View dashboard</button>
+      <div class="err" id="loginErr"></div>
+    </div>
+  </div>
+
+  <div id="dashboard">
+
+    <div class="stat-row">
+      <div class="stat"><div class="n" id="sTotal">0</div><div class="lbl">Total events (session)</div></div>
+      <div class="stat"><div class="n" id="sRights">0</div><div class="lbl">Rights checks</div></div>
+      <div class="stat"><div class="n" id="sLetters">0</div><div class="lbl">Letters generated</div></div>
+      <div class="stat"><div class="n" id="sDocs">0</div><div class="lbl">Docs analyzed</div></div>
+      <div class="stat"><div class="n" id="sFail">0</div><div class="lbl">Errors</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Live activity feed</h2>
+        <button class="refresh-btn" onclick="refresh()">Refresh now</button>
+      </div>
+      <div class="feed" id="feed"><div class="empty">Loading...</div></div>
+      <p class="server-note">Log resets when the server restarts (Render free tier, ~15 min idle). Events from this session only.</p>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+  const BACKEND = 'https://legible-nn7i.onrender.com';
+  let adminKey = sessionStorage.getItem('legible_admin_key') || '';
+  let refreshTimer = null;
+
+  if (adminKey) tryShow();
+
+  document.getElementById('keyInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+  function login() {
+    const k = document.getElementById('keyInput').value.trim();
+    if (!k) return;
+    adminKey = k;
+    tryShow();
+  }
+
+  async function tryShow() {
+    try {
+      const res = await fetch(`${BACKEND}/api/admin/events?key=${encodeURIComponent(adminKey)}`);
+      if (res.status === 401) {
+        document.getElementById('loginErr').textContent = 'Wrong admin key.';
+        return;
+      }
+      sessionStorage.setItem('legible_admin_key', adminKey);
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      const data = await res.json();
+      render(data);
+      startPolling();
+    } catch(e) {
+      document.getElementById('loginErr').textContent = 'Could not reach server. Try again.';
+    }
+  }
+
+  async function refresh() {
+    try {
+      const res = await fetch(`${BACKEND}/api/admin/events?key=${encodeURIComponent(adminKey)}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      render(data);
+    } catch(e) {}
+  }
+
+  function startPolling() {
+    if (refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = setInterval(refresh, 10000); // auto-refresh every 10s
+  }
+
+  function render({ events, total }) {
+    document.getElementById('sTotal').textContent   = total;
+    document.getElementById('sRights').textContent  = events.filter(e => e.type === 'rights').length;
+    document.getElementById('sLetters').textContent = events.filter(e => e.type === 'letter').length;
+    document.getElementById('sDocs').textContent    = events.filter(e => e.type === 'analyze').length;
+    document.getElementById('sFail').textContent    = events.filter(e => !e.success).length;
+
+    const feed = document.getElementById('feed');
+    if (!events.length) {
+      feed.innerHTML = '<div class="empty">No events yet this session. Wait for someone to use the site!</div>';
+      return;
+    }
+
+    feed.innerHTML = events.map(e => {
+      const label = e.type === 'rights' ? 'Rights check' : e.type === 'letter' ? 'Letter generated' : 'Doc analyzed';
+      const cls   = e.type === 'rights' ? 'type-rights' : e.type === 'letter' ? 'type-letter' : 'type-analyze';
+      let detail  = '';
+      if (e.state || e.grade) detail = [e.state, e.grade, e.disability].filter(Boolean).join(' · ');
+      else if (e.chars) detail = `${e.chars.toLocaleString()} chars`;
+
+      const ago  = timeAgo(e.t);
+      const fail = !e.success ? '<span class="fail-mark"> — FAILED</span>' : '';
+
+      return `
+        <div class="event-row ${e.success ? 'success' : 'fail'}">
+          <span class="type-badge ${cls}">${label}</span>
+          <div class="event-meta">
+            <div class="event-main">${detail || '(no detail)'}${fail}</div>
+            <div class="event-time">${ago} · ${new Date(e.t).toLocaleTimeString()}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function timeAgo(iso) {
+    const diff = Math.floor((Date.now() - new Date(iso)) / 1000);
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+    return `${Math.floor(diff/3600)}h ago`;
+  }
+</script>

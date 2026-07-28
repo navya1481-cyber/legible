@@ -6,6 +6,18 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 
+// In-memory event log (resets on server restart — free tier cold starts)
+const eventLog = [];
+function logEvent(type, details, success) {
+  eventLog.push({
+    t: new Date().toISOString(),
+    type,
+    success,
+    ...details,
+  });
+  if (eventLog.length > 1000) eventLog.splice(0, eventLog.length - 1000);
+}
+
 const allowedOrigins = [
   'https://getlegible.org',
   'https://www.getlegible.org',
@@ -93,9 +105,11 @@ Respond ONLY with valid JSON in this exact format, no markdown, no preamble:
 
     const raw = await callClaude([{ role: "user", content: prompt }], 600);
     const parsed = safeParseJson(raw);
+    logEvent('rights', { state, grade, disability: disability.slice(0, 80) }, true);
     res.json(parsed);
   } catch (err) {
     console.error("Rights lookup failed:", err.message);
+    logEvent('rights', { state, grade, disability: (req.body.disability || '').slice(0, 80) }, false);
     res.status(500).json({ error: "Could not generate rights information. Please try again." });
   }
 });
@@ -112,9 +126,11 @@ app.post('/api/letter', apiLimiter, async (req, res) => {
 The letter should be addressed to 'Dear Principal/IEP Team,' cite the relevant law (IDEA and/or Section 504), and request evaluation or accommodations appropriate to the concern. Write the full letter body only, 3 to 4 paragraphs, professional tone. Use only these placeholders: [Child's Name], [Your Name], [School Name]. No subject line, no greeting before 'Dear', no sign-off — just the body paragraphs.`;
 
     const letterBody = await callClaude([{ role: "user", content: prompt }], 700);
+    logEvent('letter', { state, grade, disability: disability.slice(0, 80) }, true);
     res.json({ letterBody: letterBody.trim() });
   } catch (err) {
     console.error("Letter generation failed:", err.message);
+    logEvent('letter', { state: req.body.state, grade: req.body.grade, disability: (req.body.disability || '').slice(0, 80) }, false);
     res.status(500).json({ error: "Could not generate the letter. Please try again." });
   }
 });
@@ -153,16 +169,27 @@ Respond ONLY with valid JSON, no markdown:
     const raw = await callClaude([{ role: "user", content: prompt }], 1200);
     const parsed = safeParseJson(raw);
 
+    logEvent('analyze', { chars: documentText.length }, true);
     // documentText and req.file are not referenced again after this point
     // and go out of scope once the response is sent. Nothing is persisted.
     res.json(parsed);
   } catch (err) {
     console.error("Document analysis failed:", err.message);
+    logEvent('analyze', {}, false);
     res.status(500).json({ error: "Could not analyze the document. Please try again." });
   }
 });
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
+
+// Admin event log — protected by ADMIN_KEY env var
+app.get('/api/admin/events', (req, res) => {
+  const key = req.query.key || req.headers['x-admin-key'];
+  if (!process.env.ADMIN_KEY || key !== process.env.ADMIN_KEY) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  res.json({ events: eventLog.slice().reverse(), total: eventLog.length });
+});
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Legible backend running on port ${PORT}`));
