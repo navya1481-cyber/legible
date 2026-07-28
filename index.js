@@ -51,6 +51,7 @@ const apiLimiter = rateLimit({
 });
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 
 // Files are held in memory only for the duration of a single request.
 // They are never written to disk and never logged.
