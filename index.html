@@ -13,6 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Legible — Free IEP & 504 Rights Tool for Parents</title>
 <meta name="description" content="Understand your child's IEP and 504 rights in plain English. Generate accommodation letters and keep a portable record of supports, free, for every state.">
+<meta name="author" content="Navya Tuteja">
 <meta property="og:title" content="Legible — Free IEP & 504 Rights Tool for Parents">
 <meta property="og:description" content="Understand your child's IEP and 504 rights in plain English. Generate accommodation letters and keep a portable record of supports, free, for every state.">
 <meta property="og:type" content="website">
@@ -772,25 +773,25 @@
       <p data-i18n="guidesP">Whether you're just noticing something feels off or you're preparing for a formal IEP meeting, these starting points are written for parents, not lawyers.</p>
     </div>
     <div class="guides-grid reveal">
-      <a href="#start-here" class="guide-card" style="text-decoration:none;">
+      <a href="#start-here" class="guide-card" style="text-decoration:none;" onclick="track('viewed_iep_guide')">
         <div class="guide-icon">🚦</div>
         <h4 data-i18n="guide1Title">New to this? Start here.</h4>
         <p data-i18n="guide1Desc">Not sure where to begin? A plain-English overview of the IEP process, from first concern to formal evaluation.</p>
         <div class="guide-link" data-i18n="guide1Link">Read the guide</div>
       </a>
-      <a href="#screener" class="guide-card" style="text-decoration:none;">
+      <a href="#screener" class="guide-card" style="text-decoration:none;" onclick="track('clicked_find_help')">
         <div class="guide-icon">🔍</div>
         <h4 data-i18n="guide2Title">Should I request an evaluation?</h4>
         <p data-i18n="guide2Desc">Answer 27 questions about your child's school experience and get a plain-language reflection to help you decide.</p>
         <div class="guide-link" data-i18n="guide2Link">Take the screener</div>
       </a>
-      <a href="#navigator" class="guide-card" style="text-decoration:none;">
+      <a href="#navigator" class="guide-card" style="text-decoration:none;" onclick="track('viewed_504_guide')">
         <div class="guide-icon">⚖️</div>
         <h4 data-i18n="guide3Title">Know your rights under IDEA and 504</h4>
         <p data-i18n="guide3Desc">What the law actually says, specific to your state, grade, and situation, with the statute citations.</p>
         <div class="guide-link" data-i18n="guide3Link">Check your rights</div>
       </a>
-      <a href="#navigator" class="guide-card" onclick="switchToExplain(); return true;" style="text-decoration:none;">
+      <a href="#navigator" class="guide-card" onclick="track('viewed_iep_guide'); switchToExplain(); return true;" style="text-decoration:none;">
         <div class="guide-icon">📄</div>
         <h4 data-i18n="guide4Title">Understand an IEP or 504 plan</h4>
         <p data-i18n="guide4Desc">Paste your child's document and get a plain-English breakdown: what it grants, and what may be missing.</p>
@@ -932,6 +933,7 @@
       <a onclick="openModal('terms-modal')">Terms of Use</a>
     </div>
     <p class="footer-disclaimer">Legible provides educational information and self-advocacy tools for IEP and 504 support. Legible is not a law firm, medical provider, school district, or substitute for professional advice. AI-generated explanations and letters may contain errors and should be reviewed before use. Do not upload or paste private documents unless you have permission to do so. Laws and policies can change — always verify current information with a qualified professional.</p>
+    <p class="footer-disclaimer" style="margin-top:10px; opacity:0.55;">Created by <a href="https://www.linkedin.com/in/navya-tuteja" style="color:inherit; text-decoration:underline; text-underline-offset:2px;">Navya Tuteja</a></p>
   </div>
 </footer>
 
@@ -1014,6 +1016,10 @@
 <script>
   const BACKEND_URL = window.LEGIBLE_BACKEND_URL || "https://legible-nn7i.onrender.com";
   let currentLanguage = 'en';
+
+  function track(event, params) {
+    if (typeof gtag !== 'undefined') gtag('event', event, params || {});
+  }
 
   const STATES = ["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"];
   const stateSelect = document.getElementById('state');
@@ -1165,6 +1171,7 @@
     btnText.textContent = t.genBtnLoading;
     errorMsg.classList.remove('show');
     document.getElementById('result').classList.remove('show');
+    track('started_rights_check', { state, grade, disability });
 
     try {
       const translations = typeof RIGHTS_TRANSLATIONS !== 'undefined' ? RIGHTS_TRANSLATIONS : null;
@@ -1185,6 +1192,7 @@
         lastResult = { ...parsed, state, grade, disability };
         renderRightsResult(parsed, 'ltr');
       }
+      track('completed_rights_check', { state, grade, disability });
     } catch (err) {
       console.error(err);
       errorMsg.textContent = t.errorMsg;
@@ -1198,6 +1206,7 @@
 
   async function downloadLetter() {
     if (!lastResult) return;
+    track('started_letter', { disability: lastResult.disability, state: lastResult.state });
     const btn = document.getElementById('letterBtn');
     const t = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : UI_TRANSLATIONS['en'];
     const origText = t.letterBtn;
@@ -1252,6 +1261,7 @@
     const citeLines = doc.splitTextToSize(lastResult.citation, maxWidth);
     doc.text(citeLines, margin, y);
     doc.save("accommodation-request-letter.pdf");
+    track('downloaded_letter', { disability: lastResult.disability, state: lastResult.state });
   }
 
   async function analyzeDocument() {
@@ -1305,6 +1315,7 @@
       }
       document.getElementById('docResult').classList.add('show');
       document.getElementById('docPaste').value = '';
+      track('analyzed_document');
     } catch (err) {
       console.error(err);
       errorMsg.textContent = tDoc.docError;
@@ -1403,6 +1414,7 @@
     document.getElementById('screener-landing').style.display = 'none';
     document.getElementById('screener-questions').style.display = 'block';
     screenerRenderCategory();
+    track('started_screener');
   }
 
   function screenerRenderCategory() {
@@ -1485,6 +1497,7 @@
     else if (total >= 11) tier = 'moderate';
     const hasHighCat = catScores.some(c => c.pct >= 0.70);
     if (hasHighCat && tier === 'mild') tier = 'moderate';
+    track('completed_screener', { tier });
 
     const sorted = [...catScores].sort((a, b) => b.pct - a.pct);
     const topCats = sorted.slice(0, 2).filter(c => c.score > 0).map(c => c.name);
