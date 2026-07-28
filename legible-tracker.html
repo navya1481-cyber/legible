@@ -1,0 +1,623 @@
+<title>Legible — Impact Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  /* ── Tokens ── */
+  :root {
+    --green-deep:   #1a3828;
+    --green-mid:    #266040;
+    --teal:         #1fa882;
+    --teal-dim:     #178264;
+    --bg:           #f3faf7;
+    --surface:      #ffffff;
+    --surface-2:    #eaf4ef;
+    --border:       #d0e8dc;
+    --text:         #111820;
+    --text-soft:    #4a5568;
+    --text-faint:   #8aa89c;
+    --red:          #c0392b;
+    --amber:        #d4832a;
+    --shadow:       0 1px 3px rgba(26,56,40,.07), 0 4px 16px rgba(26,56,40,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:        #0d1f17;
+      --surface:   #162a1f;
+      --surface-2: #1d3829;
+      --border:    #2a4a38;
+      --text:      #e8f4ee;
+      --text-soft: #8abfa6;
+      --text-faint:#4a7a62;
+      --shadow:    0 1px 3px rgba(0,0,0,.25), 0 4px 16px rgba(0,0,0,.2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:        #0d1f17;
+    --surface:   #162a1f;
+    --surface-2: #1d3829;
+    --border:    #2a4a38;
+    --text:      #e8f4ee;
+    --text-soft: #8abfa6;
+    --text-faint:#4a7a62;
+    --shadow:    0 1px 3px rgba(0,0,0,.25), 0 4px 16px rgba(0,0,0,.2);
+  }
+  :root[data-theme="light"] {
+    --bg:        #f3faf7;
+    --surface:   #ffffff;
+    --surface-2: #eaf4ef;
+    --border:    #d0e8dc;
+    --text:      #111820;
+    --text-soft: #4a5568;
+    --text-faint:#8aa89c;
+    --shadow:    0 1px 3px rgba(26,56,40,.07), 0 4px 16px rgba(26,56,40,.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--green-deep);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .logo-row { display: flex; align-items: center; gap: 10px; }
+  .logo-mark {
+    width: 30px; height: 30px; border-radius: 6px;
+    background: var(--teal);
+    display: flex; align-items: center; justify-content: center;
+    font-family: Georgia, serif; font-style: italic; font-weight: 700;
+    font-size: 17px; color: #fff; flex-shrink: 0;
+  }
+  header h1 {
+    font-size: 15px; font-weight: 600; color: #fff;
+    letter-spacing: -.01em;
+  }
+  header p { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 1px; }
+  .theme-btn {
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+    color: rgba(255,255,255,.75); border-radius: 7px; padding: 6px 12px;
+    font-size: 12px; cursor: pointer; font-family: inherit;
+    transition: background .15s;
+  }
+  .theme-btn:hover { background: rgba(255,255,255,.18); }
+
+  /* ── Layout ── */
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  /* ── Stat cards ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+  }
+  .stat-card .val {
+    font-family: Georgia, serif;
+    font-size: 34px;
+    font-weight: 700;
+    color: var(--green-deep);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  :root[data-theme="dark"] .stat-card .val,
+  @media (prefers-color-scheme: dark) { .stat-card .val { color: var(--teal); } }
+  .stat-card .label {
+    font-size: 11.5px;
+    color: var(--text-soft);
+    margin-top: 5px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  .stat-card .sub {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 2px;
+  }
+
+  /* ── Two-col ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title span.pill {
+    background: var(--surface-2);
+    color: var(--teal);
+    border-radius: 100px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+  }
+
+  /* ── Form ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 480px) { .form-grid { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field.full { grid-column: 1 / -1; }
+  label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  input, textarea, select {
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 11px;
+    font-size: 13.5px;
+    font-family: inherit;
+    color: var(--text);
+    width: 100%;
+    transition: border-color .15s;
+    -webkit-appearance: none;
+  }
+  input[type="number"] { font-variant-numeric: tabular-nums; }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--teal);
+    background: var(--surface);
+  }
+  textarea { resize: vertical; min-height: 64px; }
+  .btn-add {
+    margin-top: 14px;
+    width: 100%;
+    background: var(--green-deep);
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    padding: 11px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s, transform .1s;
+    box-shadow: 0 2px 8px rgba(26,56,40,.2);
+  }
+  .btn-add:hover { background: var(--green-mid); transform: translateY(-1px); }
+  .btn-add:active { transform: none; }
+
+  /* ── Guide box ── */
+  .guide-box {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 12.5px;
+    color: var(--text-soft);
+    line-height: 1.65;
+  }
+  .guide-box b { color: var(--text); }
+  .guide-step {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .guide-step:last-child { border-bottom: none; padding-bottom: 0; }
+  .guide-step .num {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--green-deep); color: #fff;
+    font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+
+  /* ── Table ── */
+  .table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+  }
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-soft);
+    background: var(--surface-2);
+    border-bottom: 1.5px solid var(--border);
+    white-space: nowrap;
+  }
+  th:first-child { border-radius: 8px 0 0 0; }
+  th:last-child  { border-radius: 0 8px 0 0; }
+  td {
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface-2); }
+  .td-num { font-family: Georgia, serif; font-weight: 700; color: var(--green-deep); }
+  .td-date { font-weight: 600; color: var(--text); }
+  .td-notes { white-space: normal; max-width: 200px; font-size: 12px; color: var(--text-soft); }
+  .del-btn {
+    background: none; border: none; color: var(--text-faint);
+    cursor: pointer; font-size: 14px; padding: 2px 6px;
+    border-radius: 5px; line-height: 1;
+    transition: color .15s, background .15s;
+  }
+  .del-btn:hover { color: var(--red); background: rgba(192,57,43,.08); }
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-faint);
+    font-size: 13px;
+  }
+
+  /* ── Export ── */
+  .export-section { margin-top: 28px; }
+  .export-box {
+    background: var(--green-deep);
+    border-radius: 14px;
+    padding: 22px 24px;
+    color: rgba(255,255,255,.85);
+    font-size: 13.5px;
+    line-height: 1.75;
+    font-style: italic;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .export-box b { color: #fff; font-style: normal; }
+  .btn-copy {
+    margin-top: 12px;
+    background: var(--teal);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s;
+  }
+  .btn-copy:hover { background: var(--teal-dim); }
+  .copied { background: var(--green-mid) !important; }
+
+  /* ── Teal nums in dark ── */
+  @media (prefers-color-scheme: dark) {
+    .td-num { color: var(--teal); }
+    .stat-card .val { color: var(--teal); }
+  }
+  :root[data-theme="dark"] .td-num { color: var(--teal); }
+  :root[data-theme="dark"] .stat-card .val { color: var(--teal); }
+</style>
+
+<header>
+  <div class="logo-row">
+    <div class="logo-mark">L</div>
+    <div>
+      <h1>Legible — Impact Tracker</h1>
+      <p>Personal dashboard · Navya Tuteja</p>
+    </div>
+  </div>
+  <button class="theme-btn" onclick="toggleTheme()">Toggle theme</button>
+</header>
+
+<main>
+
+  <!-- Stat cards -->
+  <div class="stat-row" id="statRow">
+    <div class="stat-card"><div class="val" id="s-users">—</div><div class="label">Total Users</div><div class="sub">cumulative peak</div></div>
+    <div class="stat-card"><div class="val" id="s-va">—</div><div class="label">Virginia Users</div><div class="sub">cumulative peak</div></div>
+    <div class="stat-card"><div class="val" id="s-letters">—</div><div class="label">Letters Downloaded</div><div class="sub">all time total</div></div>
+    <div class="stat-card"><div class="val" id="s-screener">—</div><div class="label">Screener Completions</div><div class="sub">all time total</div></div>
+    <div class="stat-card"><div class="val" id="s-rights">—</div><div class="label">Rights Checks</div><div class="sub">all time total</div></div>
+    <div class="stat-card"><div class="val" id="s-entries">—</div><div class="label">Snapshots Logged</div><div class="sub">since you started tracking</div></div>
+  </div>
+
+  <div class="two-col">
+
+    <!-- Form -->
+    <div class="card">
+      <div class="card-title">Log a new snapshot <span class="pill">Monthly recommended</span></div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="f-date">
+        </div>
+        <div class="field">
+          <label>Total Users (GA → Acquisition → Overview → Users)</label>
+          <input type="number" id="f-users" placeholder="e.g. 58" min="0">
+        </div>
+        <div class="field">
+          <label>Virginia Users (GA → Demographics → Region)</label>
+          <input type="number" id="f-va" placeholder="e.g. 12" min="0">
+        </div>
+        <div class="field">
+          <label>Letters Downloaded (GA → Events → downloaded_letter)</label>
+          <input type="number" id="f-letters" placeholder="e.g. 0" min="0">
+        </div>
+        <div class="field">
+          <label>Screener Completions (GA → Events → completed_screener)</label>
+          <input type="number" id="f-screener" placeholder="e.g. 0" min="0">
+        </div>
+        <div class="field">
+          <label>Rights Checks (GA → Events → completed_rights_check)</label>
+          <input type="number" id="f-rights" placeholder="e.g. 0" min="0">
+        </div>
+        <div class="field">
+          <label>Docs Analyzed (GA → Events → analyzed_document)</label>
+          <input type="number" id="f-docs" placeholder="e.g. 0" min="0">
+        </div>
+        <div class="field">
+          <label>New Users this period</label>
+          <input type="number" id="f-new" placeholder="e.g. 59" min="0">
+        </div>
+        <div class="field full">
+          <label>Notes (context, milestones, where traffic came from)</label>
+          <textarea id="f-notes" placeholder="e.g. Shared in r/specialed, spike from Virginia school district"></textarea>
+        </div>
+      </div>
+      <button class="btn-add" onclick="addEntry()">+ Save snapshot</button>
+    </div>
+
+    <!-- How-to guide -->
+    <div class="card">
+      <div class="card-title">How to pull these numbers from GA</div>
+      <div class="guide-box">
+        <div class="guide-step">
+          <div class="num">1</div>
+          <div>Go to <b>analytics.google.com</b> → click <b>Legible</b> property → set date range (top right) to <b>All time</b> or a specific month.</div>
+        </div>
+        <div class="guide-step">
+          <div class="num">2</div>
+          <div><b>Total Users & New Users:</b> Left sidebar → Reports → Acquisition → Overview. Big numbers at top.</div>
+        </div>
+        <div class="guide-step">
+          <div class="num">3</div>
+          <div><b>Virginia Users:</b> Reports → Demographics → Overview → scroll to Regions table → click United States → find Virginia row.</div>
+        </div>
+        <div class="guide-step">
+          <div class="num">4</div>
+          <div><b>Letters, Screener, Rights, Docs:</b> Reports → Engagement → Events → scroll down to the table. Find each row by name: <b>downloaded_letter</b>, <b>completed_screener</b>, <b>completed_rights_check</b>, <b>analyzed_document</b>. The number in <b>Event count</b> column is your figure.</div>
+        </div>
+        <div class="guide-step">
+          <div class="num">5</div>
+          <div>Log it here, then hit <b>Save snapshot</b>. Come back monthly to track growth over time.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- History table -->
+  <div class="card">
+    <div class="card-title">Snapshot history</div>
+    <div class="table-wrap">
+      <table id="historyTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Users</th>
+            <th>Virginia</th>
+            <th>Letters DL'd</th>
+            <th>Screener</th>
+            <th>Rights checks</th>
+            <th>Docs analyzed</th>
+            <th>New users</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <tr><td colspan="10" class="empty-state">No snapshots yet. Add your first one above.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- College app export -->
+  <div class="export-section">
+    <div class="card">
+      <div class="card-title">College application summary <span class="pill">Copy-ready</span></div>
+      <div class="export-box" id="exportBox">Log at least one snapshot to generate your college app summary.</div>
+      <button class="btn-copy" id="copyBtn" onclick="copyExport()">Copy to clipboard</button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  const STORE_KEY = 'legible_tracker_v1';
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
+    catch(e) { return []; }
+  }
+  function save(data) {
+    localStorage.setItem(STORE_KEY, JSON.stringify(data));
+  }
+
+  function n(val) { return parseInt(val, 10) || 0; }
+
+  function addEntry() {
+    const date    = document.getElementById('f-date').value;
+    const users   = n(document.getElementById('f-users').value);
+    const va      = n(document.getElementById('f-va').value);
+    const letters = n(document.getElementById('f-letters').value);
+    const screener= n(document.getElementById('f-screener').value);
+    const rights  = n(document.getElementById('f-rights').value);
+    const docs    = n(document.getElementById('f-docs').value);
+    const newU    = n(document.getElementById('f-new').value);
+    const notes   = document.getElementById('f-notes').value.trim();
+
+    if (!date) { alert('Please select a date.'); return; }
+
+    const data = load();
+    data.unshift({ date, users, va, letters, screener, rights, docs, newU, notes, id: Date.now() });
+    save(data);
+    render();
+
+    // Reset form
+    document.getElementById('f-users').value = '';
+    document.getElementById('f-va').value = '';
+    document.getElementById('f-letters').value = '';
+    document.getElementById('f-screener').value = '';
+    document.getElementById('f-rights').value = '';
+    document.getElementById('f-docs').value = '';
+    document.getElementById('f-new').value = '';
+    document.getElementById('f-notes').value = '';
+  }
+
+  function deleteEntry(id) {
+    if (!confirm('Delete this snapshot?')) return;
+    const data = load().filter(e => e.id !== id);
+    save(data);
+    render();
+  }
+
+  function fmt(n) {
+    if (n >= 1000) return (n/1000).toFixed(1).replace(/\.0$/, '') + 'k';
+    return n.toString();
+  }
+
+  function render() {
+    const data = load();
+
+    // Stats
+    const peakUsers   = data.length ? Math.max(...data.map(e => e.users))   : 0;
+    const peakVA      = data.length ? Math.max(...data.map(e => e.va))      : 0;
+    const totalLetters= data.reduce((s,e) => s + e.letters, 0);
+    const totalScreen = data.reduce((s,e) => s + e.screener, 0);
+    const totalRights = data.reduce((s,e) => s + e.rights, 0);
+
+    document.getElementById('s-users').textContent   = data.length ? fmt(peakUsers)   : '—';
+    document.getElementById('s-va').textContent      = data.length ? fmt(peakVA)      : '—';
+    document.getElementById('s-letters').textContent = data.length ? fmt(totalLetters) : '—';
+    document.getElementById('s-screener').textContent= data.length ? fmt(totalScreen)  : '—';
+    document.getElementById('s-rights').textContent  = data.length ? fmt(totalRights)  : '—';
+    document.getElementById('s-entries').textContent = data.length || '—';
+
+    // Table
+    const tbody = document.getElementById('historyBody');
+    if (!data.length) {
+      tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No snapshots yet. Add your first one above.</td></tr>';
+    } else {
+      tbody.innerHTML = data.map(e => `
+        <tr>
+          <td class="td-date">${e.date}</td>
+          <td class="td-num">${e.users || '—'}</td>
+          <td class="td-num">${e.va || '—'}</td>
+          <td class="td-num">${e.letters || '—'}</td>
+          <td class="td-num">${e.screener || '—'}</td>
+          <td class="td-num">${e.rights || '—'}</td>
+          <td class="td-num">${e.docs || '—'}</td>
+          <td class="td-num">${e.newU || '—'}</td>
+          <td class="td-notes">${e.notes || ''}</td>
+          <td><button class="del-btn" onclick="deleteEntry(${e.id})">✕</button></td>
+        </tr>
+      `).join('');
+    }
+
+    // Export
+    const box = document.getElementById('exportBox');
+    if (!data.length) {
+      box.textContent = 'Log at least one snapshot to generate your college app summary.';
+      return;
+    }
+    const latest = data[0];
+    const oldest = data[data.length - 1];
+    const months = data.length;
+
+    let lines = [];
+
+    if (peakUsers > 0)
+      lines.push(`Reached ${peakUsers.toLocaleString()} unique visitors${peakVA > 0 ? `, including ${peakVA.toLocaleString()} from Virginia` : ''}.`);
+    if (totalLetters > 0)
+      lines.push(`${totalLetters.toLocaleString()} accommodation-request letters generated and downloaded by families — each one tailored to a specific state, grade, and disability.`);
+    if (totalScreen > 0)
+      lines.push(`${totalScreen.toLocaleString()} families completed the 27-question evaluation screener.`);
+    if (totalRights > 0)
+      lines.push(`${totalRights.toLocaleString()} personalized rights lookups completed across all 50 states.`);
+    if (months > 1)
+      lines.push(`Tracked over ${months} monthly snapshots from ${oldest.date} to ${latest.date}.`);
+
+    if (lines.length === 0) {
+      box.textContent = 'Fill in some numbers above — even just Users — to generate bullet points.';
+    } else {
+      box.innerHTML = lines.map(l => `<b>·</b> ${l}`).join('\n');
+    }
+  }
+
+  function copyExport() {
+    const text = document.getElementById('exportBox').innerText
+      .replace(/^·\s*/gm, '• ');
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy to clipboard'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  function toggleTheme() {
+    const root = document.documentElement;
+    const cur  = root.getAttribute('data-theme');
+    root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+  }
+
+  // Pre-fill today's date
+  document.getElementById('f-date').value = new Date().toISOString().slice(0, 10);
+
+  // Seed with real GA data if tracker is empty
+  if (!localStorage.getItem(STORE_KEY)) {
+    const seed = [
+      {
+        date: '2026-07-27', users: 147, va: 0, letters: 0, screener: 0,
+        rights: 0, docs: 0, newU: 145,
+        notes: 'Jun 10 – Jul 27, 2026 · From GA Reports Snapshot. 751 total events, 18s avg engagement. Custom action events (letters, rights checks) not yet tracked at this point.',
+        id: 1
+      }
+    ];
+    save(seed);
+  }
+
+  render();
+</script>
