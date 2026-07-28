@@ -2,20 +2,25 @@ const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
 
-// In-memory event log (resets on server restart — free tier cold starts)
-const eventLog = [];
+// Persistent event log — written to disk so it survives process restarts.
+// Cleared only when Render deploys new code (new container).
+const EVENTS_FILE = path.join(__dirname, 'legible-events.json');
+let eventLog = [];
+try {
+  if (fs.existsSync(EVENTS_FILE)) {
+    eventLog = JSON.parse(fs.readFileSync(EVENTS_FILE, 'utf8'));
+  }
+} catch(e) { eventLog = []; }
+
 function logEvent(type, details, success) {
-  eventLog.push({
-    t: new Date().toISOString(),
-    type,
-    success,
-    ...details,
-  });
-  if (eventLog.length > 1000) eventLog.splice(0, eventLog.length - 1000);
+  eventLog.push({ t: new Date().toISOString(), type, success, ...details });
+  if (eventLog.length > 5000) eventLog.splice(0, eventLog.length - 5000);
+  try { fs.writeFileSync(EVENTS_FILE, JSON.stringify(eventLog)); } catch(e) {}
 }
 
 const allowedOrigins = [
