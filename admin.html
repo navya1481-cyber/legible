@@ -127,7 +127,7 @@
         <button class="refresh-btn" onclick="refresh()">Refresh now</button>
       </div>
       <div class="feed" id="feed"><div class="empty">Loading...</div></div>
-      <p class="server-note">Log resets when the server restarts (Render free tier, ~15 min idle). Events from this session only.</p>
+      <p class="server-note">Events persist to disk and survive restarts. Requires Render Disk mounted at /data — without it, log clears on each deploy.</p>
     </div>
 
   </div>

@@ -7,19 +7,26 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 
-// Persistent event log — written to disk so it survives process restarts.
-// Cleared only when Render deploys new code (new container).
-const EVENTS_FILE = path.join(__dirname, 'legible-events.json');
+// Persistent event log.
+// Writes to /data (Render persistent disk) when available, otherwise local dir.
+// /data survives ALL deploys and restarts. Local fallback clears on redeploy.
+const EVENTS_FILE = fs.existsSync('/data')
+  ? '/data/legible-events.json'
+  : path.join(__dirname, 'legible-events.json');
+
+console.log(`Event log path: ${EVENTS_FILE}`);
+
 let eventLog = [];
 try {
   if (fs.existsSync(EVENTS_FILE)) {
     eventLog = JSON.parse(fs.readFileSync(EVENTS_FILE, 'utf8'));
+    console.log(`Loaded ${eventLog.length} existing events from disk.`);
   }
 } catch(e) { eventLog = []; }
 
 function logEvent(type, details, success) {
   eventLog.push({ t: new Date().toISOString(), type, success, ...details });
-  if (eventLog.length > 5000) eventLog.splice(0, eventLog.length - 5000);
+  if (eventLog.length > 10000) eventLog.splice(0, eventLog.length - 10000);
   try { fs.writeFileSync(EVENTS_FILE, JSON.stringify(eventLog)); } catch(e) {}
 }
 
