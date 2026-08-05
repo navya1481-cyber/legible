@@ -44,6 +44,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.set('trust proxy', 1); // Render sits behind a proxy
 app.use(express.json({ limit: '2mb' }));
 app.use(express.static(__dirname));
 
@@ -109,13 +110,13 @@ Respond ONLY with valid JSON in this exact format, no markdown, no preamble:
   "citation": "Citations: [real statute citations, e.g. Section 504 of the Rehabilitation Act, 34 CFR 104.35; IDEA 20 U.S.C. 1414]"
 }`;
 
-    const raw = await callClaude([{ role: "user", content: prompt }], 600);
+    const raw = await callClaude([{ role: "user", content: prompt }], 1000);
     const parsed = safeParseJson(raw);
     logEvent('rights', { state, grade, disability: disability.slice(0, 80) }, true);
     res.json(parsed);
   } catch (err) {
     console.error("Rights lookup failed:", err.message);
-    logEvent('rights', { state, grade, disability: (req.body.disability || '').slice(0, 80) }, false);
+    logEvent('rights', { state: req.body.state, grade: req.body.grade, disability: (req.body.disability || '').slice(0, 80) }, false);
     res.status(500).json({ error: "Could not generate rights information. Please try again." });
   }
 });
