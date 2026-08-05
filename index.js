@@ -2,33 +2,51 @@ const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
 
-// Persistent event log.
-// Writes to /data (Render persistent disk) when available, otherwise local dir.
-// /data survives ALL deploys and restarts. Local fallback clears on redeploy.
-const EVENTS_FILE = fs.existsSync('/data')
-  ? '/data/legible-events.json'
-  : path.join(__dirname, 'legible-events.json');
-
-console.log(`Event log path: ${EVENTS_FILE}`);
+// ── Event persistence via Upstash Redis (free, survives all deploys) ──
+// Fallback: in-memory only (resets on redeploy) if env vars not set.
+async function redisCmd(...args) {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(args)
+    });
+    const data = await res.json();
+    return data.result;
+  } catch(e) { return null; }
+}
 
 let eventLog = [];
-try {
-  if (fs.existsSync(EVENTS_FILE)) {
-    eventLog = JSON.parse(fs.readFileSync(EVENTS_FILE, 'utf8'));
-    console.log(`Loaded ${eventLog.length} existing events from disk.`);
-  }
-} catch(e) { eventLog = []; }
 
-function logEvent(type, details, success) {
-  eventLog.push({ t: new Date().toISOString(), type, success, ...details });
-  if (eventLog.length > 10000) eventLog.splice(0, eventLog.length - 10000);
-  try { fs.writeFileSync(EVENTS_FILE, JSON.stringify(eventLog)); } catch(e) {}
+async function loadEvents() {
+  const raw = await redisCmd('lrange', 'legible_events', 0, -1);
+  if (!raw) return;
+  eventLog = raw.map(s => { try { return JSON.parse(s); } catch(e) { return null; } }).filter(Boolean);
+  console.log(`Loaded ${eventLog.length} events from Upstash.`);
 }
+
+async function logEvent(type, details, success) {
+  const event = { t: new Date().toISOString(), type, success, ...details };
+  eventLog.push(event);
+  if (eventLog.length > 10000) eventLog.splice(0, eventLog.length - 10000);
+  // Persist to Redis — fire and forget
+  redisCmd('rpush', 'legible_events', JSON.stringify(event))
+    .then(() => redisCmd('ltrim', 'legible_events', -10000, -1))
+    .catch(() => {});
+}
+
+// Load persisted events before server starts
+loadEvents().then(() => {
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => console.log(`Legible backend running on port ${PORT}`));
+});
 
 const allowedOrigins = [
   'https://getlegible.org',
@@ -202,8 +220,7 @@ app.get('/api/admin/events', (req, res) => {
   if (!process.env.ADMIN_KEY || key !== process.env.ADMIN_KEY) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
-  res.json({ events: eventLog.slice().reverse(), total: eventLog.length });
+  const persistent = !!(process.env.UPSTASH_REDIS_REST_URL);
+  res.json({ events: eventLog.slice().reverse(), total: eventLog.length, persistent });
 });
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`Legible backend running on port ${PORT}`));

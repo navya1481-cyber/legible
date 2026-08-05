@@ -2,109 +2,173 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <style>
-  :root {
-    --green:  #1a3828;
-    --teal:   #1fa882;
-    --bg:     #f3faf7;
-    --surface:#ffffff;
-    --surf2:  #eaf4ef;
-    --border: #d0e8dc;
-    --text:   #111820;
-    --soft:   #4a5568;
-    --faint:  #8aa89c;
-    --red:    #c0392b;
-    --amber:  #d4832a;
-    --shadow: 0 1px 3px rgba(26,56,40,.07), 0 4px 16px rgba(26,56,40,.06);
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: #f7f9f8;
+    color: #111820;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0d1f17; --surface: #162a1f; --surf2: #1d3829;
-      --border: #2a4a38; --text: #e8f4ee; --soft: #8abfa6; --faint: #4a7a62;
-    }
+
+  /* Header */
+  header {
+    background: #fff;
+    border-bottom: 1px solid #e4ede9;
+    padding: 0 28px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); font-size:14px; line-height:1.5; }
-
-  header { background:var(--green); padding:18px 24px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
-  .logo { display:flex; align-items:center; gap:10px; }
-  .mark { width:28px; height:28px; border-radius:6px; background:var(--teal); display:flex; align-items:center; justify-content:center; font-family:Georgia,serif; font-style:italic; font-weight:700; font-size:16px; color:#fff; }
-  header h1 { font-size:14px; font-weight:700; color:#fff; }
-  header p { font-size:11px; color:rgba(255,255,255,.45); margin-top:1px; }
-  .status-dot { width:8px; height:8px; border-radius:50%; background:#6ee7b7; display:inline-block; margin-right:6px; animation:pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-  .live-badge { font-size:11px; font-weight:600; color:rgba(255,255,255,.65); display:flex; align-items:center; }
-
-  main { max-width:1000px; margin:0 auto; padding:24px 18px 60px; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .mark {
+    width: 26px; height: 26px; border-radius: 6px;
+    background: #1a3828;
+    display: flex; align-items: center; justify-content: center;
+    font-family: Georgia, serif; font-style: italic; font-weight: 700;
+    font-size: 15px; color: #fff;
+  }
+  .logo-text { font-size: 14px; font-weight: 700; color: #111820; }
+  .logo-sub { font-size: 12px; color: #8a9e98; margin-left: 6px; font-weight: 400; }
+  .live-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: #f0faf5; border: 1px solid #c5e8d8;
+    border-radius: 100px; padding: 4px 12px;
+    font-size: 12px; font-weight: 600; color: #1a7a50;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
 
   /* Login */
-  #loginScreen { display:flex; align-items:center; justify-content:center; min-height:60vh; }
-  .login-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:36px; box-shadow:var(--shadow); max-width:360px; width:100%; text-align:center; }
-  .login-card h2 { font-size:18px; margin-bottom:6px; }
-  .login-card p { font-size:13px; color:var(--soft); margin-bottom:22px; }
-  .key-input { width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:9px; font-size:14px; font-family:monospace; background:var(--surf2); color:var(--text); }
-  .key-input:focus { outline:none; border-color:var(--teal); }
-  .btn-login { margin-top:12px; width:100%; background:var(--green); color:#fff; border:none; border-radius:9px; padding:11px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
-  .btn-login:hover { background:#266040; }
-  .err { margin-top:10px; font-size:12px; color:var(--red); }
+  main { max-width: 960px; margin: 0 auto; padding: 28px 20px 60px; }
+  #loginScreen { display: flex; align-items: center; justify-content: center; min-height: 60vh; }
+  .login-card {
+    background: #fff; border: 1px solid #e4ede9; border-radius: 16px;
+    padding: 40px; max-width: 380px; width: 100%; text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  }
+  .login-card .mark-lg {
+    width: 44px; height: 44px; border-radius: 10px; background: #1a3828;
+    display: flex; align-items: center; justify-content: center;
+    font-family: Georgia, serif; font-style: italic; font-weight: 700;
+    font-size: 24px; color: #fff; margin: 0 auto 16px;
+  }
+  .login-card h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .login-card p { font-size: 13px; color: #6b7c76; margin-bottom: 24px; }
+  .key-input {
+    width: 100%; padding: 11px 14px;
+    border: 1.5px solid #dde8e4; border-radius: 9px;
+    font-size: 14px; font-family: 'SF Mono', 'Fira Code', monospace;
+    background: #f7f9f8; color: #111820; letter-spacing: .05em;
+  }
+  .key-input:focus { outline: none; border-color: #1fa882; background: #fff; }
+  .btn-login {
+    margin-top: 12px; width: 100%;
+    background: #1a3828; color: #fff; border: none;
+    border-radius: 9px; padding: 11px;
+    font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+    transition: background .15s;
+  }
+  .btn-login:hover { background: #266040; }
+  .err { margin-top: 10px; font-size: 12px; color: #dc2626; }
 
   /* Dashboard */
-  #dashboard { display:none; }
-  .stat-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-bottom:22px; }
-  .stat { background:var(--surface); border:1px solid var(--border); border-radius:11px; padding:14px 16px; box-shadow:var(--shadow); }
-  .stat .n { font-family:Georgia,serif; font-size:30px; font-weight:700; color:var(--green); line-height:1; font-variant-numeric:tabular-nums; }
-  @media (prefers-color-scheme:dark) { .stat .n { color:var(--teal); } }
-  .stat .lbl { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--soft); margin-top:4px; font-weight:600; }
+  #dashboard { display: none; }
 
-  /* Feed */
-  .card { background:var(--surface); border:1px solid var(--border); border-radius:13px; padding:20px; box-shadow:var(--shadow); }
-  .card-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-  .card-head h2 { font-size:13px; font-weight:700; }
-  .refresh-btn { background:var(--surf2); border:1px solid var(--border); border-radius:7px; padding:5px 12px; font-size:11.5px; font-weight:600; cursor:pointer; color:var(--soft); font-family:inherit; }
-  .refresh-btn:hover { color:var(--text); }
-
-  .feed { display:flex; flex-direction:column; gap:8px; }
-  .event-row { display:flex; align-items:flex-start; gap:12px; padding:10px 12px; border-radius:9px; background:var(--surf2); }
-  .event-row.success { border-left:3px solid var(--teal); }
-  .event-row.fail    { border-left:3px solid var(--red); }
-  .type-badge {
-    display:inline-flex; align-items:center; justify-content:center;
-    border-radius:6px; padding:3px 8px; font-size:10.5px; font-weight:700;
-    text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; flex-shrink:0;
+  /* Stat row */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
   }
-  .type-rights  { background:#d1fae5; color:#065f46; }
-  .type-letter  { background:#dbeafe; color:#1e40af; }
-  .type-analyze { background:#ede9fe; color:#4c1d95; }
-  @media (prefers-color-scheme:dark) {
-    .type-rights  { background:#064e3b; color:#6ee7b7; }
-    .type-letter  { background:#1e3a5f; color:#93c5fd; }
-    .type-analyze { background:#2e1065; color:#c4b5fd; }
+  .stat {
+    background: #fff;
+    border: 1px solid #e4ede9;
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
   }
-  .event-meta { flex:1; min-width:0; }
-  .event-main { font-size:13px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .event-time { font-size:11px; color:var(--faint); margin-top:2px; }
-  .fail-mark { font-size:11px; color:var(--red); font-weight:700; }
+  .stat .n {
+    font-size: 32px; font-family: Georgia, serif; font-weight: 700;
+    color: #1a3828; line-height: 1; font-variant-numeric: tabular-nums;
+  }
+  .stat .lbl {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .06em; color: #8a9e98; margin-top: 5px;
+  }
+  .stat.errors .n { color: #dc2626; }
 
-  .empty { text-align:center; padding:40px; color:var(--faint); font-size:13px; }
-  .server-note { font-size:11.5px; color:var(--soft); margin-top:14px; text-align:center; font-style:italic; }
+  /* Card */
+  .card {
+    background: #fff;
+    border: 1px solid #e4ede9;
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
+  }
+  .card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .card-title { font-size: 14px; font-weight: 700; color: #111820; }
+  .refresh-btn {
+    background: #f0faf5; border: 1px solid #c5e8d8; color: #1a7a50;
+    border-radius: 7px; padding: 5px 14px; font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: background .15s;
+  }
+  .refresh-btn:hover { background: #ddf5eb; }
+
+  /* Event feed */
+  .feed { display: flex; flex-direction: column; gap: 6px; }
+  .ev {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; border-radius: 9px;
+    border: 1px solid #eef3f1; background: #fafcfb;
+    transition: background .1s;
+  }
+  .ev:hover { background: #f3faf7; }
+  .ev.fail { border-color: #fecaca; background: #fff5f5; }
+  .badge {
+    padding: 3px 9px; border-radius: 100px;
+    font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .05em; white-space: nowrap; flex-shrink: 0;
+  }
+  .badge-rights  { background: #dcfce7; color: #15803d; }
+  .badge-letter  { background: #dbeafe; color: #1d4ed8; }
+  .badge-analyze { background: #f3e8ff; color: #7e22ce; }
+  .badge-fail    { background: #fee2e2; color: #dc2626; }
+  .ev-main { flex: 1; min-width: 0; font-size: 13px; font-weight: 500; color: #1a2820; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ev-time { font-size: 11.5px; color: #aabdb6; flex-shrink: 0; }
+  .empty {
+    text-align: center; padding: 48px 20px;
+    color: #aabdb6; font-size: 13px;
+  }
+  .empty .icon { font-size: 28px; margin-bottom: 10px; }
+  .server-note { font-size: 12px; color: #aabdb6; margin-top: 14px; text-align: center; }
 </style>
 
 <header>
   <div class="logo">
     <div class="mark">L</div>
-    <div>
-      <h1>Legible Admin</h1>
-      <p>Real-time activity log</p>
-    </div>
+    <span class="logo-text">Legible Admin</span>
+    <span class="logo-sub">Activity log</span>
   </div>
-  <div class="live-badge"><span class="status-dot"></span><span id="liveLabel">Live</span></div>
+  <div class="live-pill"><div class="dot"></div>Live</div>
 </header>
 
 <main>
 
   <div id="loginScreen">
     <div class="login-card">
+      <div class="mark-lg">L</div>
       <h2>Admin access</h2>
-      <p>Enter your admin key to view live activity.</p>
+      <p>Enter your admin key to view activity.</p>
       <input class="key-input" type="password" id="keyInput" placeholder="Admin key" autocomplete="off">
       <button class="btn-login" onclick="login()">View dashboard</button>
       <div class="err" id="loginErr"></div>
@@ -114,20 +178,22 @@
   <div id="dashboard">
 
     <div class="stat-row">
-      <div class="stat"><div class="n" id="sTotal">0</div><div class="lbl">Total events (session)</div></div>
+      <div class="stat"><div class="n" id="sTotal">0</div><div class="lbl">Total events</div></div>
       <div class="stat"><div class="n" id="sRights">0</div><div class="lbl">Rights checks</div></div>
       <div class="stat"><div class="n" id="sLetters">0</div><div class="lbl">Letters generated</div></div>
       <div class="stat"><div class="n" id="sDocs">0</div><div class="lbl">Docs analyzed</div></div>
-      <div class="stat"><div class="n" id="sFail">0</div><div class="lbl">Errors</div></div>
+      <div class="stat errors"><div class="n" id="sFail">0</div><div class="lbl">Errors</div></div>
     </div>
 
     <div class="card">
       <div class="card-head">
-        <h2>Live activity feed</h2>
-        <button class="refresh-btn" onclick="refresh()">Refresh now</button>
+        <div class="card-title">Activity feed</div>
+        <button class="refresh-btn" onclick="refresh()">Refresh</button>
       </div>
-      <div class="feed" id="feed"><div class="empty">Loading...</div></div>
-      <p class="server-note">Events persist to disk and survive restarts. Requires Render Disk mounted at /data — without it, log clears on each deploy.</p>
+      <div class="feed" id="feed">
+        <div class="empty"><div class="icon">📭</div>No events yet. Waiting for site activity.</div>
+      </div>
+      <p class="server-note" id="storageNote"></p>
     </div>
 
   </div>
@@ -137,11 +203,10 @@
 <script>
   const BACKEND = 'https://legible-nn7i.onrender.com';
   let adminKey = sessionStorage.getItem('legible_admin_key') || '';
-  let refreshTimer = null;
-
-  if (adminKey) tryShow();
+  let timer = null;
 
   document.getElementById('keyInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+  if (adminKey) tryShow();
 
   function login() {
     const k = document.getElementById('keyInput').value.trim();
@@ -153,73 +218,66 @@
   async function tryShow() {
     try {
       const res = await fetch(`${BACKEND}/api/admin/events?key=${encodeURIComponent(adminKey)}`);
-      if (res.status === 401) {
-        document.getElementById('loginErr').textContent = 'Wrong admin key.';
-        return;
-      }
+      if (res.status === 401) { document.getElementById('loginErr').textContent = 'Wrong admin key.'; return; }
       sessionStorage.setItem('legible_admin_key', adminKey);
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
-      const data = await res.json();
-      render(data);
-      startPolling();
+      render(await res.json());
+      timer = setInterval(refresh, 10000);
     } catch(e) {
-      document.getElementById('loginErr').textContent = 'Could not reach server. Try again.';
+      document.getElementById('loginErr').textContent = 'Could not reach server.';
     }
   }
 
   async function refresh() {
     try {
       const res = await fetch(`${BACKEND}/api/admin/events?key=${encodeURIComponent(adminKey)}`);
-      if (!res.ok) return;
-      const data = await res.json();
-      render(data);
+      if (res.ok) render(await res.json());
     } catch(e) {}
   }
 
-  function startPolling() {
-    if (refreshTimer) clearInterval(refreshTimer);
-    refreshTimer = setInterval(refresh, 10000); // auto-refresh every 10s
-  }
-
-  function render({ events, total }) {
-    document.getElementById('sTotal').textContent   = total;
+  function render({ events, total, persistent }) {
+    document.getElementById('sTotal').textContent   = total || 0;
     document.getElementById('sRights').textContent  = events.filter(e => e.type === 'rights').length;
     document.getElementById('sLetters').textContent = events.filter(e => e.type === 'letter').length;
     document.getElementById('sDocs').textContent    = events.filter(e => e.type === 'analyze').length;
     document.getElementById('sFail').textContent    = events.filter(e => !e.success).length;
 
+    const note = document.getElementById('storageNote');
+    note.textContent = persistent
+      ? 'Events stored in Upstash Redis — persists across all deploys and restarts.'
+      : 'No Upstash connected — events reset on each deploy. Add UPSTASH_REDIS_REST_URL + TOKEN to Render env to fix.';
+
     const feed = document.getElementById('feed');
     if (!events.length) {
-      feed.innerHTML = '<div class="empty">No events yet this session. Wait for someone to use the site!</div>';
+      feed.innerHTML = '<div class="empty"><div class="icon">📭</div>No events yet. Waiting for site activity.</div>';
       return;
     }
 
     feed.innerHTML = events.map(e => {
-      const label = e.type === 'rights' ? 'Rights check' : e.type === 'letter' ? 'Letter generated' : 'Doc analyzed';
-      const cls   = e.type === 'rights' ? 'type-rights' : e.type === 'letter' ? 'type-letter' : 'type-analyze';
-      let detail  = '';
-      if (e.state || e.grade) detail = [e.state, e.grade, e.disability].filter(Boolean).join(' · ');
-      else if (e.chars) detail = `${e.chars.toLocaleString()} chars`;
-
-      const ago  = timeAgo(e.t);
-      const fail = !e.success ? '<span class="fail-mark"> — FAILED</span>' : '';
-
+      const type   = e.type === 'rights' ? 'Rights check' : e.type === 'letter' ? 'Letter' : 'Doc analysis';
+      const badgeCls = e.success
+        ? (e.type === 'rights' ? 'badge-rights' : e.type === 'letter' ? 'badge-letter' : 'badge-analyze')
+        : 'badge-fail';
+      const label = e.success ? type : type + ' — failed';
+      let detail = '';
+      if (e.state) detail = [e.state, e.grade, e.disability].filter(Boolean).join(' · ');
+      else if (e.chars) detail = `${Number(e.chars).toLocaleString()} chars`;
+      const ago = timeAgo(e.t);
       return `
-        <div class="event-row ${e.success ? 'success' : 'fail'}">
-          <span class="type-badge ${cls}">${label}</span>
-          <div class="event-meta">
-            <div class="event-main">${detail || '(no detail)'}${fail}</div>
-            <div class="event-time">${ago} · ${new Date(e.t).toLocaleTimeString()}</div>
-          </div>
+        <div class="ev ${e.success ? '' : 'fail'}">
+          <span class="badge ${badgeCls}">${label}</span>
+          <span class="ev-main">${detail || '—'}</span>
+          <span class="ev-time">${ago}</span>
         </div>`;
     }).join('');
   }
 
   function timeAgo(iso) {
-    const diff = Math.floor((Date.now() - new Date(iso)) / 1000);
-    if (diff < 60) return `${diff}s ago`;
-    if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
-    return `${Math.floor(diff/3600)}h ago`;
+    const s = Math.floor((Date.now() - new Date(iso)) / 1000);
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s/60)}m ago`;
+    if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+    return `${Math.floor(s/86400)}d ago`;
   }
 </script>
