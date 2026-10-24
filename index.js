@@ -189,6 +189,7 @@ A separate verified database already shows this family their legal rights with o
 Strict rules:
 - You may describe the process in general terms (for example, that an evaluation can be requested in writing, or that school decisions can be formally challenged), but do NOT state any specific legal rules, numbers, deadlines, or timelines, and do NOT cite statutes or regulations. The verified database handles all specifics.
 - Do NOT make eligibility determinations. Never say the child qualifies or will qualify; use "may" language.
+- Do NOT name specific legal remedies, procedures, or entitlements (for example, an independent educational evaluation or a due process hearing). Refer to "formal options" generally; the verified rights shown above the explanation name the specifics.
 - Do NOT invent facts about ${state}.
 - If the family's added context describes a dispute or a denial, acknowledge it directly and note, in general terms, that they have formal ways to challenge school decisions.
 
