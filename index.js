@@ -3,6 +3,11 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
+const { safeParseJson, stripUnverifiedCitations } = require('./lib');
+const {
+  VERIFIED_DATE, PARENT_CENTER_URL,
+  UNIVERSAL_RIGHTS, CATEGORY_RIGHTS, STATE_DATA, NEXT_STEPS,
+} = require('./rights-data');
 
 const app = express();
 
@@ -111,34 +116,84 @@ async function callClaude(messages, maxTokens = 1500) {
   return data.content.map(b => b.text || "").join("");
 }
 
-function safeParseJson(raw) {
-  const cleaned = raw.replace(/```json|```/g, "").trim();
-  return JSON.parse(cleaned);
-}
-
 // ---------- Rights Navigator ----------
+// Architecture: the legal content (federal rights, citations, state
+// timelines, next steps) comes from the hand-verified database in
+// rights-data.js and is returned deterministically — it cannot be wrong in
+// a new way at runtime. The AI is used only as an explanation layer: it
+// connects the family's described situation to the process in plain
+// English, is instructed never to state law or citations, and its output
+// is passed through a citation validator as a backstop. If the AI call
+// fails, the verified content is still returned.
 app.post('/api/rights', apiLimiter, async (req, res) => {
   try {
     const { state, grade, disability, extra } = req.body;
-    if (!state || !grade || !disability) {
+    if (typeof state !== 'string' || typeof grade !== 'string' || typeof disability !== 'string'
+        || !state || !grade || !disability || state.length > 40 || grade.length > 60 || disability.length > 120) {
       return res.status(400).json({ error: "Missing required fields." });
     }
 
-    const prompt = `You are a precise, accurate special education rights assistant for a website called Legible. A family in ${state} has a child in ${grade} with the following concern: ${disability}.${extra ? " Additional context from the family: " + extra : ""}
+    const categoryRights = CATEGORY_RIGHTS[disability] || CATEGORY_RIGHTS['Other / describe below'];
+    const federal = [...categoryRights, ...UNIVERSAL_RIGHTS];
 
-Explain, in warm but precise plain English, exactly what federal law (IDEA and Section 504 of the Rehabilitation Act) guarantees this family, and note any commonly known ${state}-specific evaluation timelines or procedural rules if you are confident about them. If you are not confident about a state-specific detail, default to the accurate federal timeline and say so rather than guessing.
+    const stateEntry = STATE_DATA[state];
+    const stateInfo = stateEntry
+      ? { name: state, verified: stateEntry }
+      : {
+          name: state,
+          verified: null,
+          fallback: `Federal law's 60-day evaluation deadline applies in ${state} unless the state sets its own timeframe. We haven't hand-verified ${state}'s specific timeline yet, so we won't guess at it — your state's federally funded parent center can confirm it for free.`,
+          parentCenterUrl: PARENT_CENTER_URL,
+        };
 
-Respond ONLY with valid JSON in this exact format, no markdown, no preamble:
+    // AI explanation layer — optional, clearly scoped, never load-bearing.
+    let ai = null;
+    let aiUnavailable = false;
+    const extraContext = typeof extra === 'string' ? extra.slice(0, 2000) : '';
+    try {
+      const prompt = `You are the explanation layer of Legible, a special education rights tool. A family in ${state} has a child in ${grade} with this concern: ${disability}.${extraContext ? " The family added: \"" + extraContext + "\"" : ""}
+
+A separate hand-verified database already shows this family their legal rights with official citations. Your job is ONLY to connect their specific situation to the process, in warm, plain English a tired parent can read quickly.
+
+Strict rules:
+- Do NOT state any laws, legal timelines, deadlines, or eligibility rules, and do NOT cite statutes or regulations. The verified database handles all of that.
+- Do NOT make eligibility determinations. Never say the child qualifies or will qualify; use "may" language.
+- Do NOT invent facts about ${state}.
+- If the family's added context describes a dispute or a denial, acknowledge it directly and note, in general terms, that they have formal ways to challenge school decisions.
+
+Respond ONLY with valid JSON, no markdown:
 {
-  "heading": "a short heading like 'Here is what Virginia and federal law say'",
-  "points": ["point 1 in plain language, one full sentence each", "point 2", "point 3", "point 4"],
-  "citation": "Citations: [real statute citations, e.g. Section 504 of the Rehabilitation Act, 34 CFR 104.35; IDEA 20 U.S.C. 1414]"
+  "applies": "3-5 sentences connecting their situation to the evaluation/IEP/504 process",
+  "questions": ["up to 4 specific questions this family could ask their school, tailored to their situation"]
 }`;
 
-    const raw = await callClaude([{ role: "user", content: prompt }], 1000);
-    const parsed = safeParseJson(raw);
+      const raw = await callClaude([{ role: "user", content: prompt }], 700);
+      const parsed = safeParseJson(raw);
+      const applies = stripUnverifiedCitations(String(parsed.applies || '').slice(0, 1500));
+      const questions = Array.isArray(parsed.questions)
+        ? parsed.questions.slice(0, 4).map(q => stripUnverifiedCitations(String(q).slice(0, 300)).text)
+        : [];
+      if (applies.text.trim()) {
+        ai = { applies: applies.text, questions, citationsRemoved: applies.removed };
+      } else {
+        aiUnavailable = true;
+      }
+    } catch (err) {
+      console.error('Rights AI layer unavailable:', err.message);
+      aiUnavailable = true;
+    }
+
     logEvent('rights', { state, grade, disability: disability.slice(0, 80) }, true);
-    res.json(parsed);
+    res.json({
+      version: 2,
+      verifiedDate: VERIFIED_DATE,
+      topic: { state, grade, disability },
+      federal,
+      state: stateInfo,
+      ai,
+      aiUnavailable,
+      nextSteps: NEXT_STEPS,
+    });
   } catch (err) {
     console.error("Rights lookup failed:", err.message);
     logEvent('rights', { state: req.body.state, grade: req.body.grade, disability: (req.body.disability || '').slice(0, 80) }, false);
@@ -149,17 +204,30 @@ Respond ONLY with valid JSON in this exact format, no markdown, no preamble:
 // ---------- Letter Generation (on-demand) ----------
 app.post('/api/letter', apiLimiter, async (req, res) => {
   try {
-    const { state, grade, disability, extra, citation } = req.body;
-    if (!state || !grade || !disability) {
+    const { state, grade, disability, extra } = req.body;
+    if (typeof state !== 'string' || typeof grade !== 'string' || typeof disability !== 'string'
+        || !state || !grade || !disability || state.length > 40 || grade.length > 60 || disability.length > 120) {
       return res.status(400).json({ error: "Missing required fields." });
     }
-    const prompt = `Write a formal, ready-to-send accommodation request letter for a parent in ${state} whose child is in ${grade} with the following concern: ${disability}.${extra ? " Additional context: " + extra : ""}
 
-The letter should be addressed to 'Dear Principal/IEP Team,' cite the relevant law (IDEA and/or Section 504), and request evaluation or accommodations appropriate to the concern. Write the full letter body only, 3 to 4 paragraphs, professional tone. Use only these placeholders: [Child's Name], [Your Name], [School Name]. No subject line, no greeting before 'Dear', no sign-off — just the body paragraphs.`;
+    // Citations come from the verified database, never from the client or
+    // the model's own memory.
+    const categoryRights = CATEGORY_RIGHTS[disability] || CATEGORY_RIGHTS['Other / describe below'];
+    const allowedCites = [...new Set([
+      ...categoryRights.map(r => r.cite),
+      '34 CFR § 300.301(b)',
+      '34 CFR § 300.111',
+    ])].join('; ');
+    const extraContext = typeof extra === 'string' ? extra.slice(0, 2000) : '';
+
+    const prompt = `Write a formal, ready-to-send accommodation request letter for a parent in ${state} whose child is in ${grade} with the following concern: ${disability}.${extraContext ? " Additional context: " + extraContext : ""}
+
+The letter should be addressed to 'Dear Principal/IEP Team,' and request evaluation or accommodations appropriate to the concern. When citing law, use ONLY citations from this verified list, exactly as written: ${allowedCites}. Do not cite anything not on that list, and do not state any state-specific timelines or deadlines. Write the full letter body only, 3 to 4 paragraphs, professional tone. Use only these placeholders: [Child's Name], [Your Name], [School Name]. No subject line, no greeting before 'Dear', no sign-off — just the body paragraphs.`;
 
     const letterBody = await callClaude([{ role: "user", content: prompt }], 700);
+    const cleaned = stripUnverifiedCitations(letterBody.trim());
     logEvent('letter', { state, grade, disability: disability.slice(0, 80) }, true);
-    res.json({ letterBody: letterBody.trim() });
+    res.json({ letterBody: cleaned.text, citationsRemoved: cleaned.removed });
   } catch (err) {
     console.error("Letter generation failed:", err.message);
     logEvent('letter', { state: req.body.state, grade: req.body.grade, disability: (req.body.disability || '').slice(0, 80) }, false);
@@ -195,7 +263,8 @@ Respond ONLY with valid JSON, no markdown:
 {
   "summary": "2-3 sentence plain language summary of what this document grants",
   "accommodations": ["accommodation 1 in plain language", "accommodation 2"],
-  "concerns": ["anything that looks missing or vague, in plain warm language, or an empty array if nothing stands out"]
+  "concerns": ["anything that looks missing or vague, in plain warm language, or an empty array if nothing stands out"],
+  "questions": ["up to 3 specific questions the family could ask at their next school meeting, based on this document"]
 }`;
 
     const raw = await callClaude([{ role: "user", content: prompt }], 1200);
@@ -212,7 +281,7 @@ Respond ONLY with valid JSON, no markdown:
   }
 });
 
-app.get('/api/health', (req, res) => res.json({ ok: true }));
+app.get('/api/health', (req, res) => res.json({ ok: true, kbVerified: VERIFIED_DATE }));
 
 // Admin event log — protected by ADMIN_KEY env var
 app.get('/api/admin/events', (req, res) => {

@@ -1,48 +1,63 @@
-# Legible — Setup Guide
+# Legible
 
-This is a real, working app: a backend server (Node/Express) plus the frontend (a single HTML file the server hosts). The backend holds your Anthropic API key so it is never exposed in the browser.
+**[getlegible.org](https://getlegible.org)** — a free web app that helps families understand and use their special education rights: IEPs, Section 504, IDEA, and accommodations, in plain language, for all 50 states.
 
-## 1. Install dependencies
+Built by [Navya Tuteja](https://www.linkedin.com/in/navya-tuteja-440193319/).
+
+## What it does
+
+- **Evaluation screener** — 27 questions across six areas of a child's school experience, scored entirely in the browser. Nothing is sent anywhere.
+- **Rights checker** — verified federal rights (with official citations and links) for the family's state, grade, and concern, plus an AI-generated explanation of how it may apply to their situation.
+- **Document explainer** — paste an IEP or 504 plan and get a plain-English breakdown of what it grants and what looks vague or missing. Pasted text is processed once and never stored.
+- **Letter generator** — a formal accommodation-request letter the family can edit in place, copy, or download as a PDF.
+- **Student Passport** — a record of what's been tried and what worked, stored only in the family's own browser (localStorage), exportable as a PDF. It belongs to the family, not the school.
+
+## How trustworthiness is engineered
+
+The core design decision: **legal content is never generated at runtime.**
+
+1. **Verified knowledge base** (`rights-data.js`) — every federal right shown to a family was hand-checked against the official text (ED.gov's IDEA regulation pages, the eCFR for Section 504, state code for state rules). Each entry carries its citation, a link to the official source, and the date it was verified. Smoke tests enforce that every UI concern category has coverage and that every citation in the knowledge base passes the validator.
+2. **AI as an explanation layer only** (`index.js`, `/api/rights`) — Claude is prompted under strict rules: no laws, no timelines, no eligibility determinations, no citations. Its only job is connecting the family's described situation to the process in plain English and suggesting questions to ask the school.
+3. **Citation validator** (`lib.js`) — a backstop that scans AI output for citation-like text and removes anything outside the known ranges of IDEA (20 U.S.C. §§ 1400–1482, 34 CFR Part 300), Section 504 (29 U.S.C. § 794, 34 CFR Part 104), and Virginia's regulations (8VAC20-81). Letter generation is restricted to citations from the verified list.
+4. **Graceful degradation** — if the AI call fails, the verified rights, state information, and next steps still return. The AI is never load-bearing.
+5. **State honesty** — state timelines appear only when hand-verified against state code (Virginia first: 65 business days, 8VAC20-81-60). Other states get the federal default plus a link to their federally funded parent center — never a guess.
+
+## Architecture
 
 ```
-cd server
+index.html          single-page frontend (vanilla JS, no framework)
+translations.js     UI + pre-translated rights content (en, es, zh, vi, ar, hi)
+index.js            Node/Express backend: static hosting + 3 AI endpoints
+rights-data.js      hand-verified legal knowledge base (data only)
+lib.js              citation validator + model-output parsing
+admin.html          /admin — live activity dashboard (ADMIN_KEY-gated)
+tests/              smoke tests (npm test)
+```
+
+The backend holds the Anthropic API key so it is never exposed to the browser, rate-limits AI endpoints (20/hour/IP), and keeps an anonymous event log (feature, state, grade, category, timestamp — never free text) in Upstash Redis for reliability monitoring.
+
+## Privacy, by design
+
+- The screener runs entirely client-side; answers never leave the page.
+- The Passport lives in the user's own localStorage, never on a server.
+- Pasted documents are held in memory for a single request — never written to disk, logged, or retained.
+- No accounts, no sign-ups. Google Analytics counts aggregate feature usage only.
+
+The privacy policy in the app matches this implementation precisely.
+
+## Run it locally
+
+```
 npm install
+export ANTHROPIC_API_KEY=sk-ant-...   # required for the AI endpoints
+npm start                              # serves http://localhost:3001
+npm test                               # knowledge base + validator smoke tests
 ```
 
-## 2. Add your Anthropic API key
+Without an API key the site still runs; AI endpoints return errors and the frontend degrades gracefully (the verified content requires no AI).
 
-The server reads the key from an environment variable. Set it before starting:
+Optional environment variables: `ADMIN_KEY` (enables `/admin`), `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (persists the event log), `PORT`.
 
-```
-export ANTHROPIC_API_KEY=sk-ant-your-key-here
-```
+## Deploy
 
-(You'll need to add one line to index.js to actually read this env var into the request header — see the note at the bottom of this file. Right now the API call is written for the Claude-in-Artifacts environment, which injects the key automatically. For a real standalone deployment, you must add it yourself.)
-
-## 3. Run it
-
-```
-npm start
-```
-
-This starts the server on port 3001 and serves the website at:
-
-```
-http://localhost:3001
-```
-
-## 4. Deploy it for real (so anyone can use it)
-
-Locally running on your laptop only works while your laptop is on and connected. To make this a real public website:
-
-- Deploy the `server` folder to a host like Render, Railway, or Fly.io (all have free tiers good enough for an MVP)
-- Set the `ANTHROPIC_API_KEY` environment variable in that host's dashboard, not in your code
-- Update the `BACKEND_URL` constant near the top of the `<script>` tag in index.html to point at your deployed backend's URL instead of localhost
-
-## How privacy is handled
-
-The IEP/504 upload feature only accepts pasted text, not file uploads, specifically to avoid creating any file artifact that could be mishandled. Pasted text is sent to the backend, used once to generate a plain-language summary, and never written to disk, logged, or stored in any database. Once the response is sent back to the browser, the text is gone. The Passport feature, which does store data long-term, only ever stores it in the user's own browser (localStorage), never on a server, since that is the student's own device and not a third-party record.
-
-## One thing to know about the API key
-
-The server automatically uses `ANTHROPIC_API_KEY` from your environment if it's set, attaching it as the required header for the Anthropic API. If you don't set it, requests will fail outside the Claude Artifacts environment, since there's no key to authenticate with. Setting the environment variable in step 2 above is all you need to do.
+Deployed on Render from this repository. Set the environment variables above in the Render dashboard — never in code.
