@@ -549,7 +549,7 @@
 </head>
 <body>
 
-<a class="skip-link" href="#screener">Skip to main content</a>
+<a class="skip-link" href="#screener" data-i18n="skipLink">Skip to main content</a>
 
 <nav>
   <div class="wrap">
@@ -697,8 +697,8 @@
 
         <div id="tab-check" role="tabpanel" aria-labelledby="check-tab">
           <div class="demo-row">
-            <button type="button" class="demo-btn" onclick="loadSampleCase()">Try a sample case (fictional)</button>
-            <span class="demo-chip" id="demoChip">Sample case — fictional student, processed live</span>
+            <button type="button" class="demo-btn" onclick="loadSampleCase()" data-i18n="demoBtnCase">Try a sample case (fictional)</button>
+            <span class="demo-chip" id="demoChip" data-i18n="demoChip">Sample case — fictional student, processed live</span>
           </div>
           <div class="field-row">
             <div class="field">
@@ -756,13 +756,13 @@
             <button class="letter-btn" id="letterBtn" onclick="prepareLetter()" data-i18n="letterBtn">✉ Draft my accommodation letter</button>
             <p class="letter-disclaimer">AI-generated letters may contain errors. Read and edit the letter carefully before sending. If anything seems wrong or unclear, consult a qualified advocate or attorney.</p>
             <div class="letter-editor" id="letterEditor">
-              <label for="letterText" style="font-size:13px;font-weight:600;color:var(--ink);display:block;margin-bottom:8px;">Your letter — edit it to fit your family</label>
+              <label for="letterText" style="font-size:13px;font-weight:600;color:var(--ink);display:block;margin-bottom:8px;" data-i18n="letterEditorLabel">Your letter — edit it to fit your family</label>
               <textarea id="letterText" spellcheck="true"></textarea>
               <div class="letter-editor-actions">
-                <button class="letter-btn" style="margin-top:0;" onclick="downloadLetterPdf()">⬇ Download as PDF</button>
-                <button class="btn-secondary" style="padding:12px 20px;font-size:14px;" onclick="copyLetter(this)">Copy text</button>
+                <button class="letter-btn" style="margin-top:0;" onclick="downloadLetterPdf()" data-i18n="letterDownloadPdf">⬇ Download as PDF</button>
+                <button class="btn-secondary" style="padding:12px 20px;font-size:14px;" onclick="copyLetter(this)" data-i18n="letterCopy">Copy text</button>
               </div>
-              <p class="letter-editor-note">Replace [Child's Name], [Your Name], and [School Name] before sending. Legal citations in this letter are restricted to Legible's verified list.</p>
+              <p class="letter-editor-note" data-i18n="letterEditorNote">Replace [Child's Name], [Your Name], and [School Name] before sending. Legal citations in this letter are restricted to Legible's verified list.</p>
             </div>
           </div>
         </div>
@@ -775,7 +775,7 @@
             <strong>Before pasting:</strong> If possible, remove or replace your child's full name, student ID number, school name, and teacher names. This text is sent to an AI service once and never stored, but removing identifying details before pasting is good practice.
           </div>
           <div class="demo-row">
-            <button type="button" class="demo-btn" onclick="loadSampleDoc()">Paste a sample 504 plan (fictional)</button>
+            <button type="button" class="demo-btn" onclick="loadSampleDoc()" data-i18n="demoBtnDoc">Paste a sample 504 plan (fictional)</button>
           </div>
           <div class="field" style="margin-bottom: 18px;">
             <label for="docPaste" data-i18n="docLabel">Paste the text of your child's IEP or 504 plan</label>
@@ -799,7 +799,7 @@
               <ul class="result-list" id="docConcerns"></ul>
             </div>
             <div id="docQuestionsWrap" style="display:none; margin-top: 18px;">
-              <div style="font-size: 13px; font-weight: 700; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;">Questions to ask at your next meeting</div>
+              <div style="font-size: 13px; font-weight: 700; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;" data-i18n="docQuestionsLabel">Questions to ask at your next meeting</div>
               <ul class="result-list" id="docQuestions"></ul>
             </div>
           </div>
@@ -1308,8 +1308,10 @@ The plan will be reviewed as needed.`;
       if (pl) pl.innerHTML = `<div class="passport-empty">${t.passportEmpty}</div>`;
     }
 
-    // Re-render screener if questions are visible
-    if (document.getElementById('screener-questions') && document.getElementById('screener-questions').style.display !== 'none') {
+    // Re-render screener if it has been started and questions are visible
+    if (typeof screenerAnswers !== 'undefined' && screenerAnswers.length
+        && document.getElementById('screener-questions')
+        && document.getElementById('screener-questions').style.display === 'block') {
       screenerRenderCategory();
     }
 
@@ -1346,8 +1348,9 @@ The plan will be reviewed as needed.`;
 
   // Renders the structured response from the verified-database API.
   function renderRightsV2(data) {
+    const t = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : UI_TRANSLATIONS['en'];
     const resultBox = document.getElementById('result');
-    resultBox.setAttribute('dir', 'ltr');
+    resultBox.setAttribute('dir', currentLanguage === 'ar' ? 'rtl' : 'ltr');
     document.getElementById('resultStatic').style.display = 'none';
 
     const fed = (data.federal || []).map(r =>
@@ -1358,9 +1361,9 @@ The plan will be reviewed as needed.`;
     let stateHtml;
     if (st.verified) {
       stateHtml = `<div class="rx-state-box">${escapeHtml(st.verified.timeline.text)} ${citeHtml(st.verified.timeline)}
-        <div class="rx-meta">State agency: <a href="${st.verified.agency.url}" target="_blank" rel="noopener">${escapeHtml(st.verified.agency.name)}</a></div></div>`;
+        <div class="rx-meta">${escapeHtml(t.rxStateAgency || 'State agency:')} <a href="${st.verified.agency.url}" target="_blank" rel="noopener">${escapeHtml(st.verified.agency.name)}</a></div></div>`;
     } else {
-      stateHtml = `<div class="rx-state-box">${escapeHtml(st.fallback || '')}${st.parentCenterUrl ? ` <a href="${st.parentCenterUrl}" target="_blank" rel="noopener">Find your parent center →</a>` : ''}</div>`;
+      stateHtml = `<div class="rx-state-box">${escapeHtml(st.fallback || '')}${st.parentCenterUrl ? ` <a href="${st.parentCenterUrl}" target="_blank" rel="noopener">${escapeHtml(t.rxFindCenter || 'Find your parent center →')}</a>` : ''}</div>`;
     }
 
     let aiHtml;
@@ -1370,9 +1373,9 @@ The plan will be reviewed as needed.`;
       ).join('');
       aiHtml = `<div class="rx-ai-box">${escapeHtml(data.ai.applies)}
         ${qs ? `<ul class="result-list" style="margin-top:14px;margin-bottom:0;">${qs}</ul>` : ''}
-        ${data.ai.citationsRemoved ? `<div class="rx-meta">⚠ ${Number(data.ai.citationsRemoved)} unverifiable citation(s) were automatically removed from this explanation.</div>` : ''}</div>`;
+        ${data.ai.citationsRemoved ? `<div class="rx-meta">${escapeHtml((t.rxCitationsRemoved || '⚠ {0} unverifiable citation(s) were automatically removed from this explanation.').replace('{0}', Number(data.ai.citationsRemoved)))}</div>` : ''}</div>`;
     } else {
-      aiHtml = `<div class="rx-ai-box">The AI explanation isn't available right now. Everything above still applies — it comes from Legible's verified database, not from AI.</div>`;
+      aiHtml = `<div class="rx-ai-box">${escapeHtml(t.rxAiUnavailable || "The AI explanation isn't available right now. Everything above still applies — it comes from Legible's verified database, not from AI.")}</div>`;
     }
 
     const steps = (data.nextSteps || []).map(s =>
@@ -1390,23 +1393,23 @@ The plan will be reviewed as needed.`;
 
     document.getElementById('resultV2').innerHTML = `
       <div class="rx-section">
-        <div class="rx-head"><h4>What federal law guarantees</h4><span class="rx-badge verified">✓ Verified · official sources</span></div>
+        <div class="rx-head"><h4>${escapeHtml(t.rxFederalH || 'What federal law guarantees')}</h4><span class="rx-badge verified">${escapeHtml(t.rxVerifiedBadge || '✓ Verified · official sources')}</span></div>
         <ul class="result-list">${fed}</ul>
-        <div class="rx-meta">Hand-checked against the linked official text (last verified ${escapeHtml(data.verifiedDate || '')}) · <a onclick="openModal('how-modal')">how Legible verifies this</a></div>
+        <div class="rx-meta">${escapeHtml((t.rxHandChecked || 'Hand-checked against the linked official text (last verified {0})').replace('{0}', data.verifiedDate || ''))} · <a onclick="openModal('how-modal')">${escapeHtml(t.rxHowLink || 'how Legible verifies this')}</a></div>
       </div>
       <div class="rx-section">
-        <div class="rx-head"><h4>In ${escapeHtml(st.name || 'your state')}</h4><span class="rx-badge ${st.verified ? 'verified' : 'info'}">${st.verified ? '✓ Verified · state code' : 'Not yet hand-verified'}</span></div>
+        <div class="rx-head"><h4>${escapeHtml((t.rxInState || 'In {0}').replace('{0}', st.name || ''))}</h4><span class="rx-badge ${st.verified ? 'verified' : 'info'}">${escapeHtml(st.verified ? (t.rxStateVerifiedBadge || '✓ Verified · state code') : (t.rxStateUnverifiedBadge || 'Not yet hand-verified'))}</span></div>
         ${stateHtml}
       </div>
       <div class="rx-section">
-        <div class="rx-head"><h4>How this may apply to your family</h4><span class="rx-badge ai">AI-generated — not verified</span></div>
+        <div class="rx-head"><h4>${escapeHtml(t.rxAiH || 'How this may apply to your family')}</h4><span class="rx-badge ai">${escapeHtml(t.rxAiBadge || 'AI-generated — not verified')}</span></div>
         ${aiHtml}
       </div>
       <div class="rx-section">
-        <div class="rx-head"><h4>Recommended next steps</h4></div>
+        <div class="rx-head"><h4>${escapeHtml(t.rxStepsH || 'Recommended next steps')}</h4></div>
         <ol class="rx-steps">${steps}</ol>
       </div>
-      ${sources.length ? `<div class="rx-sources"><strong>Official sources:</strong> ${sources.join(' &nbsp;·&nbsp; ')}</div>` : ''}`;
+      ${sources.length ? `<div class="rx-sources"><strong>${escapeHtml(t.rxSourcesLabel || 'Official sources:')}</strong> ${sources.join(' &nbsp;·&nbsp; ')}</div>` : ''}`;
 
     resultBox.classList.add('show');
     resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1509,9 +1512,10 @@ The plan will be reviewed as needed.`;
   }
 
   function copyLetter(btn) {
+    const t = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : UI_TRANSLATIONS['en'];
     navigator.clipboard.writeText(document.getElementById('letterText').value).then(() => {
       const orig = btn.textContent;
-      btn.textContent = 'Copied!';
+      btn.textContent = t.letterCopied || 'Copied!';
       setTimeout(() => { btn.textContent = orig; }, 2000);
     });
   }
