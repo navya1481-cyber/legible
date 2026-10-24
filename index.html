@@ -286,9 +286,8 @@
   }
   .privacy-notice strong { color: var(--sage-deep); }
   .result-disclaimer {
-    background: rgba(31,168,130,0.08); border: 1px solid rgba(31,168,130,0.28);
-    border-radius: 10px; padding: 14px 16px; font-size: 13px; color: var(--charcoal);
-    line-height: 1.65; margin: 18px 0 14px;
+    font-size: 12.5px; color: var(--charcoal-soft); line-height: 1.6;
+    margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line);
   }
   .letter-disclaimer {
     font-size: 12.5px; color: var(--charcoal-soft); line-height: 1.55;
@@ -471,6 +470,33 @@
   .rx-sources a { color: var(--sage-deep); text-decoration: underline; text-underline-offset: 2px; }
   .rx-meta { font-size: 12px; color: var(--charcoal-soft); margin-top: 10px; }
   .rx-meta a { color: var(--sage-deep); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+
+  /* ---------- RESULT CARDS ---------- */
+  .rx-essentials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+  @media (max-width: 760px) { .rx-essentials { grid-template-columns: 1fr; } }
+  .rx-ess-card { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
+  .rx-ess-card.deadline { border-color: rgba(31,168,130,0.55); box-shadow: 0 2px 12px rgba(31,168,130,0.1); }
+  .rx-ess-label-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .rx-ess-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--sage-deep); }
+  .rx-ess-text { font-size: 13.5px; color: var(--charcoal); line-height: 1.55; flex: 1; }
+  .rx-ess-foot { font-size: 12px; color: var(--charcoal-soft); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+  .rx-ess-foot a { color: var(--sage-deep); text-decoration: underline; text-underline-offset: 2px; }
+  .rx-card { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin-bottom: 14px; }
+  .rx-card-list { list-style: none; display: flex; flex-direction: column; gap: 10px; padding: 0; }
+  .rx-card-list li { font-size: 14px; line-height: 1.6; color: var(--charcoal); padding-left: 15px; position: relative; }
+  .rx-card-list li::before { content: ''; position: absolute; left: 0; top: 9px; width: 5px; height: 5px; border-radius: 50%; background: var(--sage); }
+  .rx-q-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  @media (max-width: 700px) { .rx-q-grid { grid-template-columns: 1fr; } }
+  .rx-q-card { background: var(--white); border: 1px solid rgba(212,131,42,0.35); border-radius: 10px; padding: 12px 14px; font-size: 13.5px; line-height: 1.55; color: var(--charcoal); }
+  .rx-details { border: 1px solid var(--line); border-radius: 12px; background: var(--white); margin: 0 0 10px; }
+  .rx-details summary { cursor: pointer; padding: 14px 18px; font-size: 14px; font-weight: 600; color: var(--ink); list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .rx-details summary::-webkit-details-marker { display: none; }
+  .rx-details summary::after { content: '+'; font-size: 18px; color: var(--sage-deep); flex-shrink: 0; }
+  .rx-details[open] summary::after { content: '−'; }
+  .rx-details .rx-card-list { padding: 0 18px 16px; }
+  .letter-cta { margin-top: 22px; background: linear-gradient(135deg, rgba(31,168,130,0.07), rgba(61,168,144,0.04)); border: 1px solid rgba(31,168,130,0.3); border-radius: 14px; padding: 20px 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .letter-cta h4 { font-family: 'Fraunces', serif; font-size: 17px; color: var(--ink); margin-bottom: 4px; }
+  .letter-cta p { font-size: 13px; color: var(--charcoal-soft); max-width: 380px; line-height: 1.55; }
 
   /* ---------- LETTER EDITOR ---------- */
   .letter-editor { margin-top: 18px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: none; }
@@ -752,10 +778,15 @@
               <div class="cite" id="resultCite"></div>
             </div>
             <div id="resultV2"></div>
-            <div class="result-disclaimer">State timelines and school-specific procedures may vary. Laws can change. Review this information with your school team, a parent advocate, or a special education attorney before sending any formal requests.</div>
-            <button class="letter-btn" id="letterBtn" onclick="prepareLetter()" data-i18n="letterBtn">✉ Draft my accommodation letter</button>
-            <p class="letter-disclaimer">AI-generated letters may contain errors. Read and edit the letter carefully before sending. If anything seems wrong or unclear, consult a qualified advocate or attorney.</p>
+            <div class="letter-cta">
+              <div>
+                <h4 data-i18n="letterCtaTitle">Turn this into a formal letter</h4>
+                <p data-i18n="letterCtaDesc">A ready-to-edit accommodation request letter, built from your situation and Legible's verified citations.</p>
+              </div>
+              <button class="letter-btn" id="letterBtn" onclick="prepareLetter()" data-i18n="letterBtn">✉ Draft my accommodation letter</button>
+            </div>
             <div class="letter-editor" id="letterEditor">
+              <p class="letter-disclaimer" style="margin-bottom:12px;">AI-generated letters may contain errors. Read and edit the letter carefully before sending. If anything seems wrong or unclear, consult a qualified advocate or attorney.</p>
               <label for="letterText" style="font-size:13px;font-weight:600;color:var(--ink);display:block;margin-bottom:8px;" data-i18n="letterEditorLabel">Your letter — edit it to fit your family</label>
               <textarea id="letterText" spellcheck="true"></textarea>
               <div class="letter-editor-actions">
@@ -764,6 +795,7 @@
               </div>
               <p class="letter-editor-note" data-i18n="letterEditorNote">Replace [Child's Name], [Your Name], and [School Name] before sending. Legal citations in this letter are restricted to Legible's verified list.</p>
             </div>
+            <div class="result-disclaimer">Informational, not legal advice. Laws change and procedures vary by district — confirm anything important with your school team, a parent advocate, or an attorney.</div>
           </div>
         </div>
 
@@ -1061,7 +1093,7 @@
     <p>The rights shown under "What federal law guarantees" do not come from AI. They come from a knowledge base inside Legible that was checked by hand against the official text of IDEA and Section 504. Every point carries its citation, links to the official source — the U.S. Department of Education's regulations site, the eCFR, or state code — and the date it was last verified.</p>
 
     <h3>AI as an explanation layer only</h3>
-    <p>Claude (Anthropic's AI model) is used for exactly one thing in the rights checker: connecting your described situation to the process, in plain English. It operates under strict rules — it may not state laws, timelines, or eligibility rules, and may not cite statutes. As a backstop, every AI response passes through a citation validator: any citation-like text that does not match the known ranges of IDEA, Section 504, or Virginia's regulations is removed automatically. And if the AI is unavailable, the verified rights still load — the AI is never load-bearing.</p>
+    <p>Claude (Anthropic's AI model) is used for exactly one thing in the rights checker: connecting your described situation to the process, in plain English. It operates under strict rules — it may describe the process only in general terms, and may not state specific legal rules, deadlines, or eligibility conclusions, or cite statutes. As a backstop, every AI response passes through a citation validator: any citation-like text that does not match the known ranges of IDEA, Section 504, or Virginia's regulations is removed automatically. And if the AI is unavailable, the verified rights still load — the AI is never load-bearing.</p>
 
     <h3>State-by-state honesty</h3>
     <p>State timelines are shown only when they have been hand-verified against that state's code (Virginia first: 65 business days, 8VAC20-81-60). For every other state, Legible says plainly that it has not verified the timeline yet and points you to your state's federally funded parent center instead of guessing.</p>
@@ -1353,63 +1385,56 @@ The plan will be reviewed as needed.`;
     resultBox.setAttribute('dir', currentLanguage === 'ar' ? 'rtl' : 'ltr');
     document.getElementById('resultStatic').style.display = 'none';
 
-    const fed = (data.federal || []).map(r =>
-      `<li><span class="check">✓</span><span>${escapeHtml(r.text)} ${citeHtml(r)}</span></li>`
-    ).join('');
+    // The three essential facts, as cards; the deadline card carries the
+    // state-verified badge (or the honest federal-default fallback).
+    const ess = (data.essentials || []).map(e => {
+      const isDeadline = 'stateVerified' in e;
+      const foot = [citeHtml(e)];
+      if (e.agency) foot.push(`<a href="${e.agency.url}" target="_blank" rel="noopener">${escapeHtml(e.agency.name)} →</a>`);
+      if (e.parentCenterUrl) foot.push(`<a href="${e.parentCenterUrl}" target="_blank" rel="noopener">${escapeHtml(t.rxFindCenter || 'Find your parent center →')}</a>`);
+      const badge = isDeadline
+        ? `<span class="rx-badge ${e.stateVerified ? 'verified' : 'info'}">${escapeHtml(e.stateVerified ? (t.rxStateVerifiedBadge || '✓ Verified · state code') : (t.rxStateUnverifiedBadge || 'Not yet hand-verified'))}</span>`
+        : '';
+      return `<div class="rx-ess-card${isDeadline ? ' deadline' : ''}">
+        <div class="rx-ess-label-row"><span class="rx-ess-label">${escapeHtml(e.label)}</span>${badge}</div>
+        <div class="rx-ess-text">${escapeHtml(e.text)}</div>
+        <div class="rx-ess-foot">${foot.join('')}</div>
+      </div>`;
+    }).join('');
 
-    const st = data.state || {};
-    let stateHtml;
-    if (st.verified) {
-      stateHtml = `<div class="rx-state-box">${escapeHtml(st.verified.timeline.text)} ${citeHtml(st.verified.timeline)}
-        <div class="rx-meta">${escapeHtml(t.rxStateAgency || 'State agency:')} <a href="${st.verified.agency.url}" target="_blank" rel="noopener">${escapeHtml(st.verified.agency.name)}</a></div></div>`;
-    } else {
-      stateHtml = `<div class="rx-state-box">${escapeHtml(st.fallback || '')}${st.parentCenterUrl ? ` <a href="${st.parentCenterUrl}" target="_blank" rel="noopener">${escapeHtml(t.rxFindCenter || 'Find your parent center →')}</a>` : ''}</div>`;
-    }
+    const cat = (data.category || []).map(r => `<li>${escapeHtml(r.text)} ${citeHtml(r)}</li>`).join('');
+    const uni = (data.universal || []).map(r => `<li>${escapeHtml(r.text)} ${citeHtml(r)}</li>`).join('');
 
-    let aiHtml;
+    let aiInner;
     if (data.ai) {
-      const qs = (data.ai.questions || []).map(q =>
-        `<li><span class="check" style="color:#9a5f1b;">?</span><span>${escapeHtml(q)}</span></li>`
-      ).join('');
-      aiHtml = `<div class="rx-ai-box">${escapeHtml(data.ai.applies)}
-        ${qs ? `<ul class="result-list" style="margin-top:14px;margin-bottom:0;">${qs}</ul>` : ''}
-        ${data.ai.citationsRemoved ? `<div class="rx-meta">${escapeHtml((t.rxCitationsRemoved || '⚠ {0} unverifiable citation(s) were automatically removed from this explanation.').replace('{0}', Number(data.ai.citationsRemoved)))}</div>` : ''}</div>`;
+      const qs = (data.ai.questions || []).map(q => `<div class="rx-q-card">${escapeHtml(q)}</div>`).join('');
+      aiInner = `<div style="font-size:14.5px;line-height:1.7;">${escapeHtml(data.ai.applies)}</div>
+        ${qs ? `<div class="rx-ess-label" style="margin-top:16px;">${escapeHtml(t.rxQuestionsH || 'Questions to ask your school')}</div><div class="rx-q-grid">${qs}</div>` : ''}
+        ${data.ai.citationsRemoved ? `<div class="rx-meta">${escapeHtml((t.rxCitationsRemoved || '⚠ {0} unverifiable citation(s) were automatically removed from this explanation.').replace('{0}', Number(data.ai.citationsRemoved)))}</div>` : ''}`;
     } else {
-      aiHtml = `<div class="rx-ai-box">${escapeHtml(t.rxAiUnavailable || "The AI explanation isn't available right now. Everything above still applies — it comes from Legible's verified database, not from AI.")}</div>`;
+      aiInner = escapeHtml(t.rxAiUnavailable || "The AI explanation isn't available right now. Everything above still applies — it comes from Legible's verified database, not from AI.");
     }
 
     const steps = (data.nextSteps || []).map(s =>
       `<li><span>${escapeHtml(s.text)}${s.url ? ` <a href="${s.url}" target="_blank" rel="noopener">${escapeHtml(s.linkLabel || s.cite || 'Source')}</a>` : ''}</span></li>`
     ).join('');
 
-    const seen = new Set();
-    const sources = [];
-    [...(data.federal || []), ...(st.verified ? [st.verified.timeline] : []), ...(data.nextSteps || [])].forEach(e => {
-      if (e.url && !seen.has(e.url)) {
-        seen.add(e.url);
-        sources.push(`<a href="${e.url}" target="_blank" rel="noopener">${escapeHtml(e.cite || e.linkLabel || e.url)}</a>`);
-      }
-    });
-
     document.getElementById('resultV2').innerHTML = `
       <div class="rx-section">
         <div class="rx-head"><h4>${escapeHtml(t.rxFederalH || 'What federal law guarantees')}</h4><span class="rx-badge verified">${escapeHtml(t.rxVerifiedBadge || '✓ Verified · official sources')}</span></div>
-        <ul class="result-list">${fed}</ul>
-        <div class="rx-meta">${escapeHtml((t.rxHandChecked || 'Hand-checked against the linked official text (last verified {0})').replace('{0}', data.verifiedDate || ''))} · <a onclick="openModal('how-modal')">${escapeHtml(t.rxHowLink || 'how Legible verifies this')}</a></div>
-      </div>
-      <div class="rx-section">
-        <div class="rx-head"><h4>${escapeHtml((t.rxInState || 'In {0}').replace('{0}', st.name || ''))}</h4><span class="rx-badge ${st.verified ? 'verified' : 'info'}">${escapeHtml(st.verified ? (t.rxStateVerifiedBadge || '✓ Verified · state code') : (t.rxStateUnverifiedBadge || 'Not yet hand-verified'))}</span></div>
-        ${stateHtml}
+        <div class="rx-essentials">${ess}</div>
+        ${cat ? `<div class="rx-card"><div class="rx-ess-label" style="margin-bottom:10px;">${escapeHtml(t.rxCategoryH || 'Specific to this concern')}</div><ul class="rx-card-list">${cat}</ul></div>` : ''}
+        <details class="rx-details"><summary>${escapeHtml(t.rxAllProtections || "Every family's protections under IDEA and Section 504")} (${(data.universal || []).length})</summary><ul class="rx-card-list">${uni}</ul></details>
+        <div class="rx-meta" style="margin-top:0;">${escapeHtml((t.rxHandChecked || 'Hand-checked against the linked official text (last verified {0})').replace('{0}', data.verifiedDate || ''))} · <a onclick="openModal('how-modal')">${escapeHtml(t.rxHowLink || 'how Legible verifies this')}</a></div>
       </div>
       <div class="rx-section">
         <div class="rx-head"><h4>${escapeHtml(t.rxAiH || 'How this may apply to your family')}</h4><span class="rx-badge ai">${escapeHtml(t.rxAiBadge || 'AI-generated — not verified')}</span></div>
-        ${aiHtml}
+        <div class="rx-ai-box">${aiInner}</div>
       </div>
-      <div class="rx-section">
+      <div class="rx-section" style="margin-bottom:0;">
         <div class="rx-head"><h4>${escapeHtml(t.rxStepsH || 'Recommended next steps')}</h4></div>
         <ol class="rx-steps">${steps}</ol>
-      </div>
-      ${sources.length ? `<div class="rx-sources"><strong>${escapeHtml(t.rxSourcesLabel || 'Official sources:')}</strong> ${sources.join(' &nbsp;·&nbsp; ')}</div>` : ''}`;
+      </div>`;
 
     resultBox.classList.add('show');
     resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });

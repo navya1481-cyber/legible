@@ -31,7 +31,7 @@ const UNIVERSAL_RIGHTS = [
     url: IDEA('d', '300.301'),
   },
   {
-    text: 'Once you give written consent, the evaluation must be completed within 60 days — or within your state’s own deadline if it sets one.',
+    text: 'Once the school has your written consent, the initial evaluation must be completed within 60 days — unless your state sets its own timeframe, which then applies instead.',
     cite: '34 CFR § 300.301(c)(1)',
     url: IDEA('d', '300.301'),
   },
@@ -51,7 +51,7 @@ const UNIVERSAL_RIGHTS = [
     url: IDEA('e', '300.503'),
   },
   {
-    text: 'If you disagree with the school’s evaluation, you have the right to request an independent educational evaluation at public expense.',
+    text: 'If you disagree with the school’s evaluation, you can request an independent educational evaluation (IEE) at public expense. The school must then either fund it or promptly request a due-process hearing to defend its own evaluation.',
     cite: '34 CFR § 300.502(b)',
     url: IDEA('e', '300.502'),
   },
@@ -67,7 +67,7 @@ const UNIVERSAL_RIGHTS = [
 const CATEGORY_RIGHTS = {
   'ADHD': [
     {
-      text: 'ADHD can qualify under IDEA’s “Other Health Impairment” category when it adversely affects educational performance — ADHD is named in the regulation itself.',
+      text: 'ADHD is named in IDEA’s “Other Health Impairment” category. A diagnosis alone doesn’t automatically qualify (or disqualify) a child — the evaluation team decides eligibility based on whether ADHD adversely affects their educational performance.',
       cite: '34 CFR § 300.8(c)(9)',
       url: IDEA('a', '300.8'),
     },
@@ -237,7 +237,8 @@ const CATEGORY_RIGHTS = {
 const STATE_DATA = {
   'Virginia': {
     timeline: {
-      text: 'Virginia sets its own deadline: the evaluation must be completed and the eligibility decision made within 65 business days of the day the school receives the referral.',
+      text: 'Virginia’s own deadline applies instead of the federal default: the evaluation must be completed and eligibility decided within 65 business days of the school receiving the referral. Note where the clock starts — at the referral, which is earlier than the federal default’s start at parental consent.',
+      short: '65 business days from the school’s receipt of the referral — Virginia’s rule, which replaces the federal 60-day default and starts at referral, not consent.',
       cite: '8VAC20-81-60(B)',
       url: 'https://law.lis.virginia.gov/admincode/title8/agency20/chapter81/section60/',
     },

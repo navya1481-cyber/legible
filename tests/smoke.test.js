@@ -4,7 +4,7 @@
 const test = require('node:test');
 const assert = require('node:assert');
 
-const { safeParseJson, findCitations, stripUnverifiedCitations } = require('../lib');
+const { safeParseJson, findCitations, stripUnverifiedCitations, decodeEntities } = require('../lib');
 const { UNIVERSAL_RIGHTS, CATEGORY_RIGHTS, STATE_DATA, NEXT_STEPS, VERIFIED_DATE } = require('../rights-data');
 
 // The exact option values of <select id="disability"> in index.html.
@@ -103,6 +103,20 @@ test('stripUnverifiedCitations removes fakes and keeps real ones', () => {
   assert.ok(text.includes('34 CFR § 300.301'));
   assert.ok(!text.includes('300.999'));
   assert.ok(text.includes('[citation removed'));
+});
+
+test('decodeEntities fixes HTML entities that models emit in plain text', () => {
+  assert.strictEqual(decodeEntities('the child&#x27;s plan'), "the child's plan");
+  assert.strictEqual(decodeEntities('&#65;DHD &amp; dyslexia'), 'ADHD & dyslexia');
+  assert.strictEqual(decodeEntities('school&rsquo;s team &mdash; today'), 'school’s team — today');
+  assert.strictEqual(decodeEntities('plain text stays plain'), 'plain text stays plain');
+  assert.strictEqual(decodeEntities('unknown &zzz; stays'), 'unknown &zzz; stays');
+});
+
+test('Virginia timeline has a short form for the deadline card', () => {
+  const tl = STATE_DATA['Virginia'].timeline;
+  assert.ok(tl.short && tl.short.includes('65 business days'));
+  assert.ok(tl.text.includes('referral'));
 });
 
 test('safeParseJson handles fenced, prefixed, and plain model output', () => {

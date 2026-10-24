@@ -3,7 +3,7 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
-const { safeParseJson, stripUnverifiedCitations } = require('./lib');
+const { safeParseJson, stripUnverifiedCitations, decodeEntities } = require('./lib');
 const {
   VERIFIED_DATE, PARENT_CENTER_URL,
   UNIVERSAL_RIGHTS, CATEGORY_RIGHTS, STATE_DATA, NEXT_STEPS,
@@ -134,17 +134,42 @@ app.post('/api/rights', apiLimiter, async (req, res) => {
     }
 
     const categoryRights = CATEGORY_RIGHTS[disability] || CATEGORY_RIGHTS['Other / describe below'];
-    const federal = [...categoryRights, ...UNIVERSAL_RIGHTS];
 
+    // The three facts a parent needs first, with the deadline resolved for
+    // their state (verified state rule when we have one, honest federal
+    // default when we don't).
     const stateEntry = STATE_DATA[state];
-    const stateInfo = stateEntry
-      ? { name: state, verified: stateEntry }
-      : {
-          name: state,
-          verified: null,
-          fallback: `Federal law's 60-day evaluation deadline applies in ${state} unless the state sets its own timeframe. We haven't hand-verified ${state}'s specific timeline yet, so we won't guess at it — your state's federally funded parent center can confirm it for free.`,
-          parentCenterUrl: PARENT_CENTER_URL,
-        };
+    const essentials = [
+      {
+        label: 'You can act today',
+        text: 'Request an evaluation at any time, in writing. You don’t need a diagnosis or the school’s permission to ask.',
+        cite: '34 CFR § 300.301(b)',
+        url: 'https://sites.ed.gov/idea/regs/b/d/300.301',
+      },
+      stateEntry
+        ? {
+            label: 'The deadline that applies',
+            text: stateEntry.timeline.short || stateEntry.timeline.text,
+            cite: stateEntry.timeline.cite,
+            url: stateEntry.timeline.url,
+            stateVerified: true,
+            agency: stateEntry.agency,
+          }
+        : {
+            label: 'The deadline that applies',
+            text: `60 days from the school receiving your written consent — the federal default. ${state} may set its own timeframe; we haven't hand-verified it yet, so your state's free parent center can confirm it.`,
+            cite: '34 CFR § 300.301(c)(1)',
+            url: 'https://sites.ed.gov/idea/regs/b/d/300.301',
+            stateVerified: false,
+            parentCenterUrl: PARENT_CENTER_URL,
+          },
+      {
+        label: 'It costs you nothing',
+        text: 'Public school evaluations, and the services that follow if your child qualifies, are provided at public expense.',
+        cite: '34 CFR § 300.101',
+        url: 'https://sites.ed.gov/idea/regs/b/b/300.101',
+      },
+    ];
 
     // AI explanation layer — optional, clearly scoped, never load-bearing.
     let ai = null;
@@ -156,7 +181,7 @@ app.post('/api/rights', apiLimiter, async (req, res) => {
 A separate hand-verified database already shows this family their legal rights with official citations. Your job is ONLY to connect their specific situation to the process, in warm, plain English a tired parent can read quickly.
 
 Strict rules:
-- Do NOT state any laws, legal timelines, deadlines, or eligibility rules, and do NOT cite statutes or regulations. The verified database handles all of that.
+- You may describe the process in general terms (for example, that an evaluation can be requested in writing, or that school decisions can be formally challenged), but do NOT state any specific legal rules, numbers, deadlines, or timelines, and do NOT cite statutes or regulations. The verified database handles all specifics.
 - Do NOT make eligibility determinations. Never say the child qualifies or will qualify; use "may" language.
 - Do NOT invent facts about ${state}.
 - If the family's added context describes a dispute or a denial, acknowledge it directly and note, in general terms, that they have formal ways to challenge school decisions.
@@ -169,9 +194,9 @@ Respond ONLY with valid JSON, no markdown:
 
       const raw = await callClaude([{ role: "user", content: prompt }], 700);
       const parsed = safeParseJson(raw);
-      const applies = stripUnverifiedCitations(String(parsed.applies || '').slice(0, 1500));
+      const applies = stripUnverifiedCitations(decodeEntities(String(parsed.applies || '').slice(0, 1500)));
       const questions = Array.isArray(parsed.questions)
-        ? parsed.questions.slice(0, 4).map(q => stripUnverifiedCitations(String(q).slice(0, 300)).text)
+        ? parsed.questions.slice(0, 4).map(q => stripUnverifiedCitations(decodeEntities(String(q).slice(0, 300))).text)
         : [];
       if (applies.text.trim()) {
         ai = { applies: applies.text, questions, citationsRemoved: applies.removed };
@@ -185,11 +210,12 @@ Respond ONLY with valid JSON, no markdown:
 
     logEvent('rights', { state, grade, disability: disability.slice(0, 80) }, true);
     res.json({
-      version: 2,
+      version: 3,
       verifiedDate: VERIFIED_DATE,
       topic: { state, grade, disability },
-      federal,
-      state: stateInfo,
+      essentials,
+      category: categoryRights,
+      universal: UNIVERSAL_RIGHTS,
       ai,
       aiUnavailable,
       nextSteps: NEXT_STEPS,
@@ -225,7 +251,7 @@ app.post('/api/letter', apiLimiter, async (req, res) => {
 The letter should be addressed to 'Dear Principal/IEP Team,' and request evaluation or accommodations appropriate to the concern. When citing law, use ONLY citations from this verified list, exactly as written: ${allowedCites}. Do not cite anything not on that list, and do not state any state-specific timelines or deadlines. Write the full letter body only, 3 to 4 paragraphs, professional tone. Use only these placeholders: [Child's Name], [Your Name], [School Name]. No subject line, no greeting before 'Dear', no sign-off — just the body paragraphs.`;
 
     const letterBody = await callClaude([{ role: "user", content: prompt }], 700);
-    const cleaned = stripUnverifiedCitations(letterBody.trim());
+    const cleaned = stripUnverifiedCitations(decodeEntities(letterBody.trim()));
     logEvent('letter', { state, grade, disability: disability.slice(0, 80) }, true);
     res.json({ letterBody: cleaned.text, citationsRemoved: cleaned.removed });
   } catch (err) {
@@ -269,6 +295,10 @@ Respond ONLY with valid JSON, no markdown:
 
     const raw = await callClaude([{ role: "user", content: prompt }], 1200);
     const parsed = safeParseJson(raw);
+    parsed.summary = decodeEntities(String(parsed.summary || ''));
+    for (const key of ['accommodations', 'concerns', 'questions']) {
+      if (Array.isArray(parsed[key])) parsed[key] = parsed[key].map(v => decodeEntities(String(v)));
+    }
 
     logEvent('analyze', { chars: documentText.length }, true);
     // documentText and req.file are not referenced again after this point

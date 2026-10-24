@@ -75,4 +75,19 @@ function stripUnverifiedCitations(text) {
   return { text: cleaned, removed };
 }
 
-module.exports = { safeParseJson, findCitations, stripUnverifiedCitations };
+// Models occasionally emit HTML entities (&#x27;, &amp;, &rsquo;) inside
+// plain-text fields. The frontend escapes output before rendering, which
+// would show those entities literally — so decode them server-side first.
+const NAMED_ENTITIES = {
+  amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ',
+  rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“',
+  mdash: '—', ndash: '–', hellip: '…',
+};
+function decodeEntities(text) {
+  return String(text)
+    .replace(/&#x([0-9a-fA-F]{1,6});/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d{1,7});/g, (_, d) => String.fromCodePoint(Number(d)))
+    .replace(/&([a-zA-Z]{2,8});/g, (m, name) => NAMED_ENTITIES[name.toLowerCase()] ?? m);
+}
+
+module.exports = { safeParseJson, findCitations, stripUnverifiedCitations, decodeEntities };
