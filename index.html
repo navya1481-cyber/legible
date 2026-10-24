@@ -264,7 +264,7 @@
   }
   .spinner.show { display: inline-block; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .result-box { margin-top: 28px; background: var(--cream-deep); border-radius: 14px; border: 1px solid var(--line); padding: 28px; display: none; }
+  .result-box { margin-top: 28px; background: #fbfaf6; border-radius: 14px; border: 1px solid #e7e3d8; padding: 28px; display: none; }
   .result-box.show { display: block; animation: fadeUp 0.4s ease; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   .result-box h4 { font-family: 'Fraunces', serif; font-size: 19px; color: var(--ink); margin-bottom: 14px; }
@@ -452,20 +452,36 @@
   .rx-section { margin-bottom: 26px; }
   .rx-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
   .rx-head h4 { font-family: 'Fraunces', serif; font-size: 18px; color: var(--ink); margin: 0; }
-  .rx-badge { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 4px 10px; border-radius: 100px; white-space: nowrap; }
-  .rx-badge.verified { background: rgba(61,168,144,0.14); color: var(--sage-deep); }
-  .rx-badge.ai { background: rgba(212,131,42,0.13); color: #9a5f1b; }
-  .rx-badge.info { background: rgba(26,56,40,0.07); color: var(--ink-light); }
+  .rx-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .rx-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .rx-badge.verified { color: var(--sage-deep); }
+  .rx-badge.verified::before { background: var(--sage); }
+  .rx-badge.ai { color: #9a5f1b; }
+  .rx-badge.ai::before { background: #d4832a; }
+  .rx-badge.info { color: var(--charcoal-soft); }
+  .rx-badge.info::before { background: #b9b2a4; }
   .rx-cite { font-size: 12px; color: var(--charcoal-soft); white-space: nowrap; }
   .rx-cite a { color: var(--sage-deep); text-decoration: underline; text-underline-offset: 2px; }
   .rx-cite a:hover { color: var(--amber-deep); }
   .rx-state-box { background: var(--white); border: 1px solid var(--line); border-left: 3px solid var(--amber); border-radius: 10px; padding: 16px 18px; font-size: 14.5px; color: var(--charcoal); line-height: 1.65; }
   .rx-state-box a { color: var(--sage-deep); text-decoration: underline; text-underline-offset: 2px; }
-  .rx-ai-box { background: rgba(212,131,42,0.05); border: 1px dashed rgba(212,131,42,0.4); border-radius: 10px; padding: 16px 18px; font-size: 14.5px; color: var(--charcoal); line-height: 1.7; }
+  .rx-ai-box { background: #fdfaf4; border: 1px solid #ecdfc8; border-radius: 12px; padding: 18px 20px; font-size: 14.5px; color: var(--charcoal); line-height: 1.7; }
+  .rx-ai-summary { font-size: 15px; line-height: 1.7; color: var(--charcoal); }
+  .rx-ai-tk { margin-top: 14px; padding-top: 14px; border-top: 1px solid #f0e8d8; }
+  .rx-ai-tk-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; color: #7a4f16; margin-bottom: 3px; }
+  .rx-ai-tk-detail { font-size: 13.5px; line-height: 1.6; color: var(--charcoal); }
+  .rx-cat-item { padding: 13px 0; border-bottom: 1px solid #eee9df; }
+  .rx-cat-item:first-child { padding-top: 0; }
+  .rx-cat-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .rx-cat-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+  .rx-cat-text { font-size: 13.5px; color: var(--charcoal); line-height: 1.6; }
+  .rx-q-more { background: none; border: none; font-size: 13px; font-weight: 600; color: var(--sage-deep); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; margin-top: 10px; padding: 0; font-family: inherit; }
   .rx-steps { list-style: none; counter-reset: rxstep; display: flex; flex-direction: column; gap: 12px; padding: 0; }
   .rx-steps li { counter-increment: rxstep; display: flex; gap: 12px; font-size: 14.5px; color: var(--charcoal); line-height: 1.6; align-items: flex-start; }
   .rx-steps li::before { content: counter(rxstep); width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%; background: var(--ink); color: var(--cream); font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
   .rx-steps a { color: var(--sage-deep); text-decoration: underline; text-underline-offset: 2px; }
+  .rx-steps strong { display: block; color: var(--ink); font-size: 14.5px; margin-bottom: 2px; }
+  .rx-steps .rx-step-text { color: var(--charcoal-soft); font-size: 13.5px; }
   .rx-sources { font-size: 12.5px; color: var(--charcoal-soft); line-height: 1.9; padding-top: 14px; border-top: 1px dashed var(--line); }
   .rx-sources a { color: var(--sage-deep); text-decoration: underline; text-underline-offset: 2px; }
   .rx-meta { font-size: 12px; color: var(--charcoal-soft); margin-top: 10px; }
@@ -476,8 +492,8 @@
   @media (max-width: 760px) { .rx-essentials { grid-template-columns: 1fr; } }
   .rx-ess-card { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
   .rx-ess-card.deadline { border-color: rgba(31,168,130,0.55); box-shadow: 0 2px 12px rgba(31,168,130,0.1); }
-  .rx-ess-label-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .rx-ess-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--sage-deep); }
+  .rx-ess-label-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .rx-ess-label { font-family: 'Fraunces', serif; font-size: 15.5px; font-weight: 600; color: var(--ink); }
   .rx-ess-text { font-size: 13.5px; color: var(--charcoal); line-height: 1.55; flex: 1; }
   .rx-ess-foot { font-size: 12px; color: var(--charcoal-soft); display: flex; flex-wrap: wrap; gap: 4px 12px; }
   .rx-ess-foot a { color: var(--sage-deep); text-decoration: underline; text-underline-offset: 2px; }
@@ -486,6 +502,7 @@
   .rx-card-list li { font-size: 14px; line-height: 1.6; color: var(--charcoal); padding-left: 15px; position: relative; }
   .rx-card-list li::before { content: ''; position: absolute; left: 0; top: 9px; width: 5px; height: 5px; border-radius: 50%; background: var(--sage); }
   .rx-q-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .rx-q-grid[hidden] { display: none; }
   @media (max-width: 700px) { .rx-q-grid { grid-template-columns: 1fr; } }
   .rx-q-card { background: var(--white); border: 1px solid rgba(212,131,42,0.35); border-radius: 10px; padding: 12px 14px; font-size: 13.5px; line-height: 1.55; color: var(--charcoal); }
   .rx-details { border: 1px solid var(--line); border-radius: 12px; background: var(--white); margin: 0 0 10px; }
@@ -494,7 +511,7 @@
   .rx-details summary::after { content: '+'; font-size: 18px; color: var(--sage-deep); flex-shrink: 0; }
   .rx-details[open] summary::after { content: '−'; }
   .rx-details .rx-card-list { padding: 0 18px 16px; }
-  .letter-cta { margin-top: 22px; background: linear-gradient(135deg, rgba(31,168,130,0.07), rgba(61,168,144,0.04)); border: 1px solid rgba(31,168,130,0.3); border-radius: 14px; padding: 20px 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .letter-cta { margin-top: 22px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; box-shadow: 0 2px 10px rgba(26,56,40,0.06); }
   .letter-cta h4 { font-family: 'Fraunces', serif; font-size: 17px; color: var(--ink); margin-bottom: 4px; }
   .letter-cta p { font-size: 13px; color: var(--charcoal-soft); max-width: 380px; line-height: 1.55; }
 
@@ -723,8 +740,8 @@
 
         <div id="tab-check" role="tabpanel" aria-labelledby="check-tab">
           <div class="demo-row">
-            <button type="button" class="demo-btn" onclick="loadSampleCase()" data-i18n="demoBtnCase">Try a sample case (fictional)</button>
-            <span class="demo-chip" id="demoChip" data-i18n="demoChip">Sample case — fictional student, processed live</span>
+            <button type="button" class="demo-btn" onclick="loadSampleCase()" data-i18n="demoBtnCase">Show me an example</button>
+            <span class="demo-chip" id="demoChip" data-i18n="demoChip">Example loaded. The student is fictional.</span>
           </div>
           <div class="field-row">
             <div class="field">
@@ -758,6 +775,16 @@
               </select>
             </div>
           </div>
+          <div class="field" style="margin-bottom: 12px;">
+            <label for="intent" data-i18n="intentLabel">What do you want to do?</label>
+            <select id="intent">
+              <option value="evaluation" data-i18n="intentEval">Ask the school to evaluate my child</option>
+              <option value="accommodation" data-i18n="intentAccom">Ask for accommodations</option>
+              <option value="refusal" data-i18n="intentRefusal">Respond to a school that said no</option>
+              <option value="meeting" data-i18n="intentMeeting">Ask for an IEP or 504 meeting</option>
+              <option value="unsure" data-i18n="intentUnsure">I'm not sure yet</option>
+            </select>
+          </div>
           <div class="field" style="margin-bottom: 18px;">
             <label for="extraDetails" data-i18n="extraLabel">Anything specific you want addressed? (optional)</label>
             <textarea id="extraDetails" data-i18n-placeholder="extraPlaceholder" placeholder="Example: my daughter was just denied an evaluation, or my son is being disciplined for behavior related to his diagnosis..."></textarea>
@@ -780,14 +807,14 @@
             <div id="resultV2"></div>
             <div class="letter-cta">
               <div>
-                <h4 data-i18n="letterCtaTitle">Turn this into a formal letter</h4>
-                <p data-i18n="letterCtaDesc">A ready-to-edit accommodation request letter, built from your situation and Legible's verified citations.</p>
+                <h4 data-i18n="letterCtaTitle">Make it official</h4>
+                <p data-i18n="letterCtaDesc">Legible drafts the letter for your chosen next step. You review and edit every word before it goes anywhere.</p>
               </div>
               <button class="letter-btn" id="letterBtn" onclick="prepareLetter()" data-i18n="letterBtn">✉ Draft my accommodation letter</button>
             </div>
             <div class="letter-editor" id="letterEditor">
               <p class="letter-disclaimer" style="margin-bottom:12px;">AI-generated letters may contain errors. Read and edit the letter carefully before sending. If anything seems wrong or unclear, consult a qualified advocate or attorney.</p>
-              <label for="letterText" style="font-size:13px;font-weight:600;color:var(--ink);display:block;margin-bottom:8px;" data-i18n="letterEditorLabel">Your letter — edit it to fit your family</label>
+              <label for="letterText" style="font-size:13px;font-weight:600;color:var(--ink);display:block;margin-bottom:8px;" data-i18n="letterEditorLabel">Your letter. Edit it to fit your family.</label>
               <textarea id="letterText" spellcheck="true"></textarea>
               <div class="letter-editor-actions">
                 <button class="letter-btn" style="margin-top:0;" onclick="downloadLetterPdf()" data-i18n="letterDownloadPdf">⬇ Download as PDF</button>
@@ -795,7 +822,7 @@
               </div>
               <p class="letter-editor-note" data-i18n="letterEditorNote">Replace [Child's Name], [Your Name], and [School Name] before sending. Legal citations in this letter are restricted to Legible's verified list.</p>
             </div>
-            <div class="result-disclaimer">Informational, not legal advice. Laws change and procedures vary by district — confirm anything important with your school team, a parent advocate, or an attorney.</div>
+            <div class="result-disclaimer">Informational, not legal advice. Laws change and procedures vary by district, so confirm anything important with your school team, a parent advocate, or an attorney.</div>
           </div>
         </div>
 
@@ -807,7 +834,7 @@
             <strong>Before pasting:</strong> If possible, remove or replace your child's full name, student ID number, school name, and teacher names. This text is sent to an AI service once and never stored, but removing identifying details before pasting is good practice.
           </div>
           <div class="demo-row">
-            <button type="button" class="demo-btn" onclick="loadSampleDoc()" data-i18n="demoBtnDoc">Paste a sample 504 plan (fictional)</button>
+            <button type="button" class="demo-btn" onclick="loadSampleDoc()" data-i18n="demoBtnDoc">Try a sample 504 plan</button>
           </div>
           <div class="field" style="margin-bottom: 18px;">
             <label for="docPaste" data-i18n="docLabel">Paste the text of your child's IEP or 504 plan</label>
@@ -1089,20 +1116,20 @@
     <h2>How Legible works</h2>
     <p class="modal-date">The engineering behind the answers</p>
 
-    <h3>A verified legal database, not AI guesses</h3>
-    <p>The rights shown under "What federal law guarantees" do not come from AI. They come from a knowledge base inside Legible that was checked by hand against the official text of IDEA and Section 504. Every point carries its citation, links to the official source — the U.S. Department of Education's regulations site, the eCFR, or state code — and the date it was last verified.</p>
+    <h3>A checked legal database, not AI guesses</h3>
+    <p>The rights shown under "What the law says" do not come from AI. They come from a knowledge base inside Legible that was checked against the official text of IDEA and Section 504 when it was written. Every entry carries its citation, a link to the official source (the U.S. Department of Education's regulations site, the eCFR, or state code), and the date of that check, so you can read the original law yourself. AI never edits this database at runtime. The checking is part of how Legible is built and is documented in its source code; it is not a review by an attorney.</p>
 
     <h3>AI as an explanation layer only</h3>
-    <p>Claude (Anthropic's AI model) is used for exactly one thing in the rights checker: connecting your described situation to the process, in plain English. It operates under strict rules — it may describe the process only in general terms, and may not state specific legal rules, deadlines, or eligibility conclusions, or cite statutes. As a backstop, every AI response passes through a citation validator: any citation-like text that does not match the known ranges of IDEA, Section 504, or Virginia's regulations is removed automatically. And if the AI is unavailable, the verified rights still load — the AI is never load-bearing.</p>
+    <p>Claude (Anthropic's AI model) is used for exactly one thing in the rights checker: connecting your described situation to the process, in plain English. It may describe the process only in general terms. It may not state specific legal rules, deadlines, or eligibility conclusions, and it may not cite law. As a backstop, every AI response passes through a citation validator that removes any citation outside the known ranges of IDEA, Section 504, and Virginia's regulations. If the AI is unavailable, the checked rights still load. The AI is never load-bearing.</p>
 
     <h3>State-by-state honesty</h3>
-    <p>State timelines are shown only when they have been hand-verified against that state's code (Virginia first: 65 business days, 8VAC20-81-60). For every other state, Legible says plainly that it has not verified the timeline yet and points you to your state's federally funded parent center instead of guessing.</p>
+    <p>State timelines appear only when they have been checked against that state's own code. Virginia came first: 65 business days, 8VAC20-81-60. For every other state, Legible says plainly that it has not verified the timeline yet and points you to your state's federally funded parent center instead of guessing.</p>
 
     <h3>Privacy by design</h3>
     <p>The screener runs entirely in your browser. The Passport is stored only on your own device. Pasted documents are processed once and never written to disk or logged. The Privacy Policy has the details.</p>
 
     <h3>Limits</h3>
-    <p>Legible is educational information, not legal advice, and AI-generated text can contain errors even inside these guardrails. Formal disputes deserve a qualified advocate or attorney.</p>
+    <p>Legible is educational information, not legal advice, and AI text can contain errors even inside these guardrails. Formal disputes deserve a qualified advocate or attorney.</p>
   </div>
 </div>
 
@@ -1241,7 +1268,8 @@
     document.getElementById('state').value = 'Virginia';
     document.getElementById('grade').selectedIndex = 1;
     document.getElementById('disability').value = 'ADHD';
-    document.getElementById('extraDetails').value = "Sample case (fictional): our third grader can't finish classwork, loses assignments, and was recently moved to the hallway to work alone. Her teacher says she's bright but \"needs to try harder.\" We asked about testing and were told to wait until next year.";
+    document.getElementById('intent').value = 'evaluation';
+    document.getElementById('extraDetails').value = "Example (fictional): our third grader can't finish classwork, loses assignments, and was recently moved to the hallway to work alone. Her teacher says she's bright but \"needs to try harder.\" We asked about testing and were told to wait until next year.";
     document.getElementById('demoChip').classList.add('show');
     track('loaded_sample_case');
   }
@@ -1402,42 +1430,61 @@ The plan will be reviewed as needed.`;
       </div>`;
     }).join('');
 
-    const cat = (data.category || []).map(r => `<li>${escapeHtml(r.text)} ${citeHtml(r)}</li>`).join('');
+    const cat = (data.category || []).map(r =>
+      `<div class="rx-cat-item">${r.title ? `<div class="rx-cat-title">${escapeHtml(r.title)}</div>` : ''}<div class="rx-cat-text">${escapeHtml(r.text)} ${citeHtml(r)}</div></div>`
+    ).join('');
     const uni = (data.universal || []).map(r => `<li>${escapeHtml(r.text)} ${citeHtml(r)}</li>`).join('');
 
     let aiInner;
     if (data.ai) {
-      const qs = (data.ai.questions || []).map(q => `<div class="rx-q-card">${escapeHtml(q)}</div>`).join('');
-      aiInner = `<div style="font-size:14.5px;line-height:1.7;">${escapeHtml(data.ai.applies)}</div>
-        ${qs ? `<div class="rx-ess-label" style="margin-top:16px;">${escapeHtml(t.rxQuestionsH || 'Questions to ask your school')}</div><div class="rx-q-grid">${qs}</div>` : ''}
-        ${data.ai.citationsRemoved ? `<div class="rx-meta">${escapeHtml((t.rxCitationsRemoved || '⚠ {0} unverifiable citation(s) were automatically removed from this explanation.').replace('{0}', Number(data.ai.citationsRemoved)))}</div>` : ''}`;
+      const qCard = q => `<div class="rx-q-card">${escapeHtml(q)}</div>`;
+      const qList = data.ai.questions || [];
+      const qPrimary = qList.slice(0, 3).map(qCard).join('');
+      const qExtra = qList.slice(3).map(qCard).join('');
+      const takeaways = (data.ai.takeaways || []).map(tk =>
+        `<div class="rx-ai-tk"><div class="rx-ai-tk-title">${escapeHtml(tk.title)}</div><div class="rx-ai-tk-detail">${escapeHtml(tk.detail)}</div></div>`
+      ).join('');
+      aiInner = `<div class="rx-ai-summary">${escapeHtml(data.ai.summary || data.ai.applies || '')}</div>
+        ${takeaways}
+        ${qPrimary ? `<div class="rx-ess-label" style="margin-top:16px;">${escapeHtml(t.rxQuestionsH || 'Questions worth asking')}</div><div class="rx-q-grid">${qPrimary}</div>` : ''}
+        ${qExtra ? `<div class="rx-q-grid" id="rxQExtra" hidden>${qExtra}</div><button type="button" class="rx-q-more" aria-expanded="false" aria-controls="rxQExtra" onclick="showMoreQuestions(this)">${escapeHtml(t.qShowMore || 'Show more questions')}</button>` : ''}
+        ${data.ai.citationsRemoved ? `<div class="rx-meta">${escapeHtml((t.rxCitationsRemoved || '{0} unverifiable citation(s) were automatically removed from this explanation.').replace('{0}', Number(data.ai.citationsRemoved)))}</div>` : ''}`;
     } else {
-      aiInner = escapeHtml(t.rxAiUnavailable || "The AI explanation isn't available right now. Everything above still applies — it comes from Legible's verified database, not from AI.");
+      aiInner = escapeHtml(t.rxAiUnavailable || "The AI explanation is not available right now. Everything above still applies; it comes from Legible's checked database, not from AI.");
     }
 
     const steps = (data.nextSteps || []).map(s =>
-      `<li><span>${escapeHtml(s.text)}${s.url ? ` <a href="${s.url}" target="_blank" rel="noopener">${escapeHtml(s.linkLabel || s.cite || 'Source')}</a>` : ''}</span></li>`
+      `<li><span>${s.title ? `<strong>${escapeHtml(s.title)}</strong>` : ''}<span class="rx-step-text">${escapeHtml(s.text)}${s.url ? ` <a href="${s.url}" target="_blank" rel="noopener">${escapeHtml(s.linkLabel || s.cite || 'Source')}</a>` : ''}</span></span></li>`
     ).join('');
 
     document.getElementById('resultV2').innerHTML = `
       <div class="rx-section">
-        <div class="rx-head"><h4>${escapeHtml(t.rxFederalH || 'What federal law guarantees')}</h4><span class="rx-badge verified">${escapeHtml(t.rxVerifiedBadge || '✓ Verified · official sources')}</span></div>
+        <div class="rx-head"><h4>${escapeHtml(t.rxFederalH || 'What the law says')}</h4><span class="rx-badge verified">${escapeHtml(t.rxVerifiedBadge || 'Checked against official sources')}</span></div>
         <div class="rx-essentials">${ess}</div>
-        ${cat ? `<div class="rx-card"><div class="rx-ess-label" style="margin-bottom:10px;">${escapeHtml(t.rxCategoryH || 'Specific to this concern')}</div><ul class="rx-card-list">${cat}</ul></div>` : ''}
+        ${cat ? `<div class="rx-card">${cat}</div>` : ''}
         <details class="rx-details"><summary>${escapeHtml(t.rxAllProtections || "Every family's protections under IDEA and Section 504")} (${(data.universal || []).length})</summary><ul class="rx-card-list">${uni}</ul></details>
-        <div class="rx-meta" style="margin-top:0;">${escapeHtml((t.rxHandChecked || 'Hand-checked against the linked official text (last verified {0})').replace('{0}', data.verifiedDate || ''))} · <a onclick="openModal('how-modal')">${escapeHtml(t.rxHowLink || 'how Legible verifies this')}</a></div>
+        <div class="rx-meta" style="margin-top:0;">${escapeHtml((t.rxHandChecked || 'Checked against the linked official sources, {0}').replace('{0}', data.verifiedDate || ''))} · <a onclick="openModal('how-modal')">${escapeHtml(t.rxHowLink || 'how Legible verifies this')}</a></div>
       </div>
       <div class="rx-section">
-        <div class="rx-head"><h4>${escapeHtml(t.rxAiH || 'How this may apply to your family')}</h4><span class="rx-badge ai">${escapeHtml(t.rxAiBadge || 'AI-generated — not verified')}</span></div>
+        <div class="rx-head"><h4>${escapeHtml(t.rxAiH || 'How this may apply to your family')}</h4><span class="rx-badge ai">${escapeHtml(t.rxAiBadge || 'AI-generated, not verified')}</span></div>
         <div class="rx-ai-box">${aiInner}</div>
       </div>
       <div class="rx-section" style="margin-bottom:0;">
-        <div class="rx-head"><h4>${escapeHtml(t.rxStepsH || 'Recommended next steps')}</h4></div>
+        <div class="rx-head"><h4>${escapeHtml(t.rxStepsH || 'What to do next')}</h4></div>
         <ol class="rx-steps">${steps}</ol>
       </div>`;
 
+    const intentId = (data.intent && data.intent.id) || 'evaluation';
+    document.getElementById('letterBtn').textContent =
+      t['letterCta_' + intentId] || (data.intent && data.intent.ctaLabel) || t.letterBtn || 'Draft my letter';
+
     resultBox.classList.add('show');
     resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function showMoreQuestions(btn) {
+    document.getElementById('rxQExtra').hidden = false;
+    btn.remove();
   }
 
   async function generateRights() {
@@ -1445,6 +1492,7 @@ The plan will be reviewed as needed.`;
     const grade = document.getElementById('grade').value;
     const disability = document.getElementById('disability').value;
     const extra = document.getElementById('extraDetails').value.trim();
+    const intent = document.getElementById('intent').value;
     const lang = currentLanguage;
     const btn = document.getElementById('genBtn');
     const spinner = document.getElementById('genSpinner');
@@ -1467,12 +1515,12 @@ The plan will be reviewed as needed.`;
 
       if (staticData) {
         const dir = translations[lang]._dir || 'ltr';
-        lastResult = { ...staticData, state, grade, disability, letterBody: '' };
+        lastResult = { ...staticData, state, grade, disability, intent, letterBody: '' };
         renderStaticRights(staticData, dir);
       } else {
         const response = await fetch(`${BACKEND_URL}/api/rights`, {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ state, grade, disability, extra })
+          body: JSON.stringify({ state, grade, disability, extra, intent })
         });
         if (!response.ok) {
           let serverMsg = null;
@@ -1480,7 +1528,7 @@ The plan will be reviewed as needed.`;
           throw new Error(serverMsg || "API error");
         }
         const parsed = await response.json();
-        lastResult = { state, grade, disability, letterBody: '' };
+        lastResult = { state, grade, disability, intent, letterBody: '' };
         renderRightsV2(parsed);
       }
       track('completed_rights_check', { state, grade, disability });
@@ -1514,6 +1562,7 @@ The plan will be reviewed as needed.`;
             state: lastResult.state,
             grade: lastResult.grade,
             disability: lastResult.disability,
+            intent: lastResult.intent,
             extra: document.getElementById('extraDetails').value.trim()
           })
         });

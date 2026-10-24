@@ -6,7 +6,7 @@ const rateLimit = require('express-rate-limit');
 const { safeParseJson, stripUnverifiedCitations, decodeEntities } = require('./lib');
 const {
   VERIFIED_DATE, PARENT_CENTER_URL,
-  UNIVERSAL_RIGHTS, CATEGORY_RIGHTS, STATE_DATA, NEXT_STEPS,
+  UNIVERSAL_RIGHTS, CATEGORY_RIGHTS, STATE_DATA, INTENTS, NEXT_STEPS,
 } = require('./rights-data');
 
 const app = express();
@@ -142,7 +142,7 @@ app.post('/api/rights', apiLimiter, async (req, res) => {
     const essentials = [
       {
         label: 'You can act today',
-        text: 'Request an evaluation at any time, in writing. You don’t need a diagnosis or the school’s permission to ask.',
+        text: 'Ask for an evaluation at any time, in writing. You do not need a diagnosis or the school’s permission first.',
         cite: '34 CFR § 300.301(b)',
         url: 'https://sites.ed.gov/idea/regs/b/d/300.301',
       },
@@ -157,7 +157,7 @@ app.post('/api/rights', apiLimiter, async (req, res) => {
           }
         : {
             label: 'The deadline that applies',
-            text: `60 days from the school receiving your written consent — the federal default. ${state} may set its own timeframe; we haven't hand-verified it yet, so your state's free parent center can confirm it.`,
+            text: `The federal default: once the school has your signed consent for testing, it has 60 days to finish the evaluation. ${state} may set its own timeline instead. We have not verified it yet, so your state's free parent center can confirm it.`,
             cite: '34 CFR § 300.301(c)(1)',
             url: 'https://sites.ed.gov/idea/regs/b/d/300.301',
             stateVerified: false,
@@ -171,6 +171,10 @@ app.post('/api/rights', apiLimiter, async (req, res) => {
       },
     ];
 
+    // The family's chosen next action. "unsure" and anything unrecognized
+    // fall back to the most common entry point, an evaluation request.
+    const intentId = INTENTS[req.body.intent] ? req.body.intent : 'evaluation';
+
     // AI explanation layer — optional, clearly scoped, never load-bearing.
     let ai = null;
     let aiUnavailable = false;
@@ -178,7 +182,9 @@ app.post('/api/rights', apiLimiter, async (req, res) => {
     try {
       const prompt = `You are the explanation layer of Legible, a special education rights tool. A family in ${state} has a child in ${grade} with this concern: ${disability}.${extraContext ? " The family added: \"" + extraContext + "\"" : ""}
 
-A separate hand-verified database already shows this family their legal rights with official citations. Your job is ONLY to connect their specific situation to the process, in warm, plain English a tired parent can read quickly.
+The family's chosen next action: ${({evaluation:'ask the school to evaluate their child', accommodation:'ask for accommodations', refusal:'respond to a school that declined their request', meeting:'ask for an IEP or 504 meeting'})[intentId]}.
+
+A separate verified database already shows this family their legal rights with official citations. Your job is ONLY to connect their specific situation to the process, in plain English a tired parent can read quickly.
 
 Strict rules:
 - You may describe the process in general terms (for example, that an evaluation can be requested in writing, or that school decisions can be formally challenged), but do NOT state any specific legal rules, numbers, deadlines, or timelines, and do NOT cite statutes or regulations. The verified database handles all specifics.
@@ -188,18 +194,34 @@ Strict rules:
 
 Respond ONLY with valid JSON, no markdown:
 {
-  "applies": "3-5 sentences connecting their situation to the evaluation/IEP/504 process",
-  "questions": ["up to 4 specific questions this family could ask their school, tailored to their situation"]
-}`;
+  "summary": "1 or 2 sentences that reflect this family's situation back to them, plainly and specifically",
+  "takeaways": [{"title": "a heading of 3 to 7 words", "detail": "1 or 2 sentences grounded in what the family described"}],
+  "questions": ["up to 4 specific, distinct questions this family could ask their school; no two should make the same point"]
+}
+Give 2 or 3 takeaways. Writing style: calm, specific, human. Vary sentence length. Never use em dashes. Never open with reassurance phrases like "the good news is". No exaggerated empathy.`;
 
-      const raw = await callClaude([{ role: "user", content: prompt }], 700);
+      const raw = await callClaude([{ role: "user", content: prompt }], 800);
       const parsed = safeParseJson(raw);
-      const applies = stripUnverifiedCitations(decodeEntities(String(parsed.applies || '').slice(0, 1500)));
-      const questions = Array.isArray(parsed.questions)
-        ? parsed.questions.slice(0, 4).map(q => stripUnverifiedCitations(decodeEntities(String(q).slice(0, 300))).text)
+      const clean = (s, max) => stripUnverifiedCitations(decodeEntities(String(s || '').slice(0, max)));
+      const summary = clean(parsed.summary, 600);
+      let removed = summary.removed;
+      const takeaways = Array.isArray(parsed.takeaways)
+        ? parsed.takeaways.slice(0, 3).map(tk => {
+            const title = clean(tk && tk.title, 90);
+            const detail = clean(tk && tk.detail, 450);
+            removed += title.removed + detail.removed;
+            return { title: title.text, detail: detail.text };
+          }).filter(tk => tk.title && tk.detail)
         : [];
-      if (applies.text.trim()) {
-        ai = { applies: applies.text, questions, citationsRemoved: applies.removed };
+      const questions = Array.isArray(parsed.questions)
+        ? parsed.questions.slice(0, 4).map(q => {
+            const res = clean(q, 300);
+            removed += res.removed;
+            return res.text;
+          }).filter(Boolean)
+        : [];
+      if (summary.text.trim()) {
+        ai = { summary: summary.text, takeaways, questions, citationsRemoved: removed };
       } else {
         aiUnavailable = true;
       }
@@ -216,6 +238,7 @@ Respond ONLY with valid JSON, no markdown:
       essentials,
       category: categoryRights,
       universal: UNIVERSAL_RIGHTS,
+      intent: { id: intentId, ctaLabel: INTENTS[intentId].ctaLabel },
       ai,
       aiUnavailable,
       nextSteps: NEXT_STEPS,
@@ -246,9 +269,12 @@ app.post('/api/letter', apiLimiter, async (req, res) => {
     ])].join('; ');
     const extraContext = typeof extra === 'string' ? extra.slice(0, 2000) : '';
 
-    const prompt = `Write a formal, ready-to-send accommodation request letter for a parent in ${state} whose child is in ${grade} with the following concern: ${disability}.${extraContext ? " Additional context: " + extraContext : ""}
+    const intentId = INTENTS[req.body.intent] ? req.body.intent : 'evaluation';
+    const prompt = `Write, ready to send, ${INTENTS[intentId].letterInstruction}
 
-The letter should be addressed to 'Dear Principal/IEP Team,' and request evaluation or accommodations appropriate to the concern. When citing law, use ONLY citations from this verified list, exactly as written: ${allowedCites}. Do not cite anything not on that list, and do not state any state-specific timelines or deadlines. Write the full letter body only, 3 to 4 paragraphs, professional tone. Use only these placeholders: [Child's Name], [Your Name], [School Name]. No subject line, no greeting before 'Dear', no sign-off — just the body paragraphs.`;
+The family: a parent in ${state} whose child is in ${grade}, with this concern: ${disability}.${extraContext ? " Additional context from the family: " + extraContext : ""}
+
+Address the letter to 'Dear Principal/IEP Team,'. When citing law, use ONLY citations from this verified list, exactly as written: ${allowedCites}. Do not cite anything not on that list, and do not state any state-specific timelines or deadlines. Write the full letter body only, 3 to 4 paragraphs, professional and calm, no em dashes. Use only these placeholders: [Child's Name], [Your Name], [School Name]. No subject line, no greeting before 'Dear', no sign-off; just the body paragraphs.`;
 
     const letterBody = await callClaude([{ role: "user", content: prompt }], 700);
     const cleaned = stripUnverifiedCitations(decodeEntities(letterBody.trim()));

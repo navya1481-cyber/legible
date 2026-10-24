@@ -5,7 +5,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 
 const { safeParseJson, findCitations, stripUnverifiedCitations, decodeEntities } = require('../lib');
-const { UNIVERSAL_RIGHTS, CATEGORY_RIGHTS, STATE_DATA, NEXT_STEPS, VERIFIED_DATE } = require('../rights-data');
+const { UNIVERSAL_RIGHTS, CATEGORY_RIGHTS, STATE_DATA, INTENTS, NEXT_STEPS, VERIFIED_DATE } = require('../rights-data');
 
 // The exact option values of <select id="disability"> in index.html.
 const DISABILITY_OPTIONS = [
@@ -72,7 +72,40 @@ test('Virginia state data is complete', () => {
 
 test('next steps are present and dated knowledge base', () => {
   assert.ok(NEXT_STEPS.length >= 3);
+  for (const step of NEXT_STEPS) {
+    assert.ok(step.title && step.title.length > 3, `next step missing title: ${step.text}`);
+  }
   assert.match(VERIFIED_DATE, /^\d{4}-\d{2}-\d{2}$/);
+});
+
+test('every category entry has a short title', () => {
+  for (const [key, entries] of Object.entries(CATEGORY_RIGHTS)) {
+    for (const entry of entries) {
+      assert.ok(entry.title && entry.title.length > 3, `missing title in "${key}"`);
+    }
+  }
+});
+
+test('every intent has a CTA label and letter instruction', () => {
+  const ids = Object.keys(INTENTS);
+  assert.deepStrictEqual(ids.sort(), ['accommodation', 'evaluation', 'meeting', 'refusal']);
+  for (const id of ids) {
+    assert.ok(INTENTS[id].ctaLabel.startsWith('Draft'), `odd CTA label for ${id}`);
+    assert.ok(INTENTS[id].letterInstruction.length > 40, `thin letter instruction for ${id}`);
+  }
+});
+
+test('knowledge base copy avoids em dashes', () => {
+  const texts = [
+    ...UNIVERSAL_RIGHTS.map(e => e.text),
+    ...Object.values(CATEGORY_RIGHTS).flat().map(e => e.text + (e.title || '')),
+    ...NEXT_STEPS.map(s => (s.title || '') + s.text),
+    STATE_DATA['Virginia'].timeline.text,
+    STATE_DATA['Virginia'].timeline.short,
+  ];
+  for (const text of texts) {
+    assert.ok(!text.includes('—'), `em dash found in: ${text.slice(0, 60)}`);
+  }
 });
 
 test('citation validator accepts real citations', () => {
