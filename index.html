@@ -6,8 +6,11 @@
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-L7LNVVMNM5');
+  // Only measure on the real site — local/dev visits stay out of analytics.
+  if (location.hostname.endsWith('getlegible.org')) {
+    gtag('js', new Date());
+    gtag('config', 'G-L7LNVVMNM5');
+  }
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,8 +44,8 @@
 <link rel="shortcut icon" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="/translations.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script defer src="/translations.js"></script>
 <style>
   :root {
     --ink: #1a3828;
@@ -418,6 +421,71 @@
   footer .tagline { color: rgba(250,248,243,0.45); font-size: 13px; }
   .lang-disclaimer { font-size: 12px; color: var(--charcoal-soft); line-height: 1.55; margin-bottom: 10px; }
 
+  /* ---------- SKIP LINK & FOCUS ---------- */
+  .skip-link {
+    position: absolute; left: -9999px; top: 0; background: var(--ink); color: var(--cream);
+    padding: 10px 18px; border-radius: 0 0 8px 0; z-index: 1000; font-weight: 600; font-size: 14px;
+  }
+  .skip-link:focus { left: 0; }
+  a:focus-visible, button:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible {
+    outline: 2px solid var(--amber-deep); outline-offset: 2px;
+  }
+
+  /* ---------- MOBILE NAV ---------- */
+  .nav-menu-btn {
+    display: none; background: none; border: 1.5px solid var(--line); border-radius: 7px;
+    font-size: 17px; line-height: 1; padding: 7px 10px; cursor: pointer; color: var(--ink);
+  }
+  @media (max-width: 760px) {
+    .nav-menu-btn { display: inline-flex; }
+    .nav-links {
+      display: none; position: absolute; top: 76px; left: 0; right: 0; background: var(--white);
+      border-bottom: 1px solid var(--line); flex-direction: column; gap: 0; padding: 8px 20px 16px;
+      box-shadow: 0 16px 32px -12px rgba(26,56,40,0.18);
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a { padding: 12px 4px; border-bottom: 1px solid var(--cream-deep); font-size: 15px; }
+  }
+
+  /* ---------- RESULT v2 ---------- */
+  .nav-tabs .nav-tab { background: none; border: none; border-bottom: 3px solid transparent; font-family: inherit; cursor: pointer; }
+  .nav-tabs .nav-tab.active { background: var(--white); border-bottom-color: var(--amber); }
+  .rx-section { margin-bottom: 26px; }
+  .rx-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .rx-head h4 { font-family: 'Fraunces', serif; font-size: 18px; color: var(--ink); margin: 0; }
+  .rx-badge { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 4px 10px; border-radius: 100px; white-space: nowrap; }
+  .rx-badge.verified { background: rgba(61,168,144,0.14); color: var(--sage-deep); }
+  .rx-badge.ai { background: rgba(212,131,42,0.13); color: #9a5f1b; }
+  .rx-badge.info { background: rgba(26,56,40,0.07); color: var(--ink-light); }
+  .rx-cite { font-size: 12px; color: var(--charcoal-soft); white-space: nowrap; }
+  .rx-cite a { color: var(--sage-deep); text-decoration: underline; text-underline-offset: 2px; }
+  .rx-cite a:hover { color: var(--amber-deep); }
+  .rx-state-box { background: var(--white); border: 1px solid var(--line); border-left: 3px solid var(--amber); border-radius: 10px; padding: 16px 18px; font-size: 14.5px; color: var(--charcoal); line-height: 1.65; }
+  .rx-state-box a { color: var(--sage-deep); text-decoration: underline; text-underline-offset: 2px; }
+  .rx-ai-box { background: rgba(212,131,42,0.05); border: 1px dashed rgba(212,131,42,0.4); border-radius: 10px; padding: 16px 18px; font-size: 14.5px; color: var(--charcoal); line-height: 1.7; }
+  .rx-steps { list-style: none; counter-reset: rxstep; display: flex; flex-direction: column; gap: 12px; padding: 0; }
+  .rx-steps li { counter-increment: rxstep; display: flex; gap: 12px; font-size: 14.5px; color: var(--charcoal); line-height: 1.6; align-items: flex-start; }
+  .rx-steps li::before { content: counter(rxstep); width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%; background: var(--ink); color: var(--cream); font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+  .rx-steps a { color: var(--sage-deep); text-decoration: underline; text-underline-offset: 2px; }
+  .rx-sources { font-size: 12.5px; color: var(--charcoal-soft); line-height: 1.9; padding-top: 14px; border-top: 1px dashed var(--line); }
+  .rx-sources a { color: var(--sage-deep); text-decoration: underline; text-underline-offset: 2px; }
+  .rx-meta { font-size: 12px; color: var(--charcoal-soft); margin-top: 10px; }
+  .rx-meta a { color: var(--sage-deep); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+
+  /* ---------- LETTER EDITOR ---------- */
+  .letter-editor { margin-top: 18px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: none; }
+  .letter-editor.show { display: block; animation: fadeUp 0.3s ease; }
+  .letter-editor textarea { width: 100%; min-height: 220px; border: 1.5px solid var(--line); border-radius: 9px; background: var(--cream); padding: 14px; font-size: 13.5px; font-family: Georgia, 'Times New Roman', serif; color: var(--charcoal); line-height: 1.7; resize: vertical; }
+  .letter-editor-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .letter-editor-note { font-size: 12px; color: var(--charcoal-soft); margin-top: 10px; }
+
+  /* ---------- DEMO ---------- */
+  .demo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+  .demo-btn { background: var(--cream-deep); border: 1.5px dashed var(--sage); color: var(--sage-deep); border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .demo-btn:hover { background: rgba(61,168,144,0.1); }
+  .demo-chip { display: none; font-size: 12px; font-weight: 700; color: #9a5f1b; background: rgba(212,131,42,0.12); border-radius: 100px; padding: 5px 12px; }
+  .demo-chip.show { display: inline-flex; }
+
   /* ---------- MODALS ---------- */
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500;
@@ -481,16 +549,19 @@
 </head>
 <body>
 
+<a class="skip-link" href="#screener">Skip to main content</a>
+
 <nav>
   <div class="wrap">
     <div class="logo"><span class="mark">L</span>Legible</div>
-    <div class="nav-links">
+    <div class="nav-links" id="navLinks">
       <a href="#screener" data-i18n="navNotSure">Not sure where to start?</a>
       <a href="#navigator" data-i18n="navRights">Know your rights</a>
       <a href="#passport" data-i18n="navPassport">Your Passport</a>
       <a href="#start-here" data-i18n="navIEP">IEP 101</a>
     </div>
     <div class="nav-right">
+      <button class="nav-menu-btn" id="navMenuBtn" aria-expanded="false" aria-controls="navLinks" aria-label="Menu" onclick="toggleMobileNav()">☰</button>
       <select id="langSelect" class="nav-lang-select" onchange="applyLanguage(this.value)" aria-label="Select language">
         <option value="en">English</option>
         <option value="es">Español</option>
@@ -556,7 +627,7 @@
             <div class="screener-fact"><div class="screener-fact-dot"></div><p data-i18n="screenerFact4">This screener is not diagnostic. It reflects your observations back to you and helps you decide whether to ask more questions.</p></div>
           </div>
           <button class="screener-start-btn" onclick="screenerStart()" data-i18n="screenerStartBtn">Start the screener →</button>
-          <p class="screener-note" data-i18n="screenerNote">27 questions · takes about 3 minutes · nothing is saved or sent</p>
+          <p class="screener-note" data-i18n="screenerNote">27 questions · takes about 3 minutes · your answers never leave this page</p>
         </div>
         <div style="background:var(--cream-deep); border-radius:14px; padding:28px 24px; border:1px solid var(--line);">
           <div style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--sage-deep); margin-bottom:16px;" data-i18n="screenerAreasLabel">Six areas we'll ask about</div>
@@ -618,13 +689,17 @@
     </div>
 
     <div class="navigator-card reveal">
-      <div class="nav-tabs">
-        <div class="nav-tab active" data-tab="check" data-i18n="tabCheck">Check rights</div>
-        <div class="nav-tab" data-tab="upload" id="explain-tab" data-i18n="tabExplain">Explain an IEP or 504</div>
+      <div class="nav-tabs" role="tablist" aria-label="Rights tools">
+        <button class="nav-tab active" data-tab="check" role="tab" aria-selected="true" id="check-tab" aria-controls="tab-check" data-i18n="tabCheck">Check rights</button>
+        <button class="nav-tab" data-tab="upload" role="tab" aria-selected="false" id="explain-tab" aria-controls="tab-upload" data-i18n="tabExplain">Explain an IEP or 504</button>
       </div>
       <div class="navigator-inner">
 
-        <div id="tab-check">
+        <div id="tab-check" role="tabpanel" aria-labelledby="check-tab">
+          <div class="demo-row">
+            <button type="button" class="demo-btn" onclick="loadSampleCase()">Try a sample case (fictional)</button>
+            <span class="demo-chip" id="demoChip">Sample case — fictional student, processed live</span>
+          </div>
           <div class="field-row">
             <div class="field">
               <label for="state" data-i18n="stateLabel">State</label>
@@ -671,21 +746,36 @@
           <p class="error-msg" id="errorMsg" role="alert" data-i18n="errorMsg">Something went wrong generating your results. Please try again.</p>
 
           <div class="result-box" id="result" aria-live="polite">
-            <h4 id="resultHeading">Here's what the law says</h4>
-            <ul class="result-list" id="resultList"></ul>
-            <div class="cite" id="resultCite"></div>
+            <div id="resultStatic" style="display:none;">
+              <h4 id="resultHeading">Here's what the law says</h4>
+              <ul class="result-list" id="resultList"></ul>
+              <div class="cite" id="resultCite"></div>
+            </div>
+            <div id="resultV2"></div>
             <div class="result-disclaimer">State timelines and school-specific procedures may vary. Laws can change. Review this information with your school team, a parent advocate, or a special education attorney before sending any formal requests.</div>
-            <button class="letter-btn" id="letterBtn" onclick="downloadLetter()" data-i18n="letterBtn">⬇ Download my accommodation letter (PDF)</button>
-            <p class="letter-disclaimer">AI-generated letters may contain errors. Read this letter carefully before sending. If anything seems wrong or unclear, consult a qualified advocate or attorney.</p>
+            <button class="letter-btn" id="letterBtn" onclick="prepareLetter()" data-i18n="letterBtn">✉ Draft my accommodation letter</button>
+            <p class="letter-disclaimer">AI-generated letters may contain errors. Read and edit the letter carefully before sending. If anything seems wrong or unclear, consult a qualified advocate or attorney.</p>
+            <div class="letter-editor" id="letterEditor">
+              <label for="letterText" style="font-size:13px;font-weight:600;color:var(--ink);display:block;margin-bottom:8px;">Your letter — edit it to fit your family</label>
+              <textarea id="letterText" spellcheck="true"></textarea>
+              <div class="letter-editor-actions">
+                <button class="letter-btn" style="margin-top:0;" onclick="downloadLetterPdf()">⬇ Download as PDF</button>
+                <button class="btn-secondary" style="padding:12px 20px;font-size:14px;" onclick="copyLetter(this)">Copy text</button>
+              </div>
+              <p class="letter-editor-note">Replace [Child's Name], [Your Name], and [School Name] before sending. Legal citations in this letter are restricted to Legible's verified list.</p>
+            </div>
           </div>
         </div>
 
-        <div id="tab-upload" style="display:none;">
+        <div id="tab-upload" style="display:none;" role="tabpanel" aria-labelledby="explain-tab">
           <div class="privacy-notice">
             <strong data-i18n="privacyNoticeStrong">Your privacy, by design.</strong><span data-i18n="privacyNoticeBody"> IEP and 504 documents can contain sensitive information. Whenever possible, paste only the section you want explained. Nothing you paste here is saved, logged, or stored.</span>
           </div>
           <div class="privacy-notice" style="margin-top:-8px;">
             <strong>Before pasting:</strong> If possible, remove or replace your child's full name, student ID number, school name, and teacher names. This text is sent to an AI service once and never stored, but removing identifying details before pasting is good practice.
+          </div>
+          <div class="demo-row">
+            <button type="button" class="demo-btn" onclick="loadSampleDoc()">Paste a sample 504 plan (fictional)</button>
           </div>
           <div class="field" style="margin-bottom: 18px;">
             <label for="docPaste" data-i18n="docLabel">Paste the text of your child's IEP or 504 plan</label>
@@ -707,6 +797,10 @@
             <div id="docConcernsWrap" style="display:none;">
               <div style="font-size: 13px; font-weight: 700; color: #a93226; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;" data-i18n="docConcernLabel">Worth a closer look</div>
               <ul class="result-list" id="docConcerns"></ul>
+            </div>
+            <div id="docQuestionsWrap" style="display:none; margin-top: 18px;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;">Questions to ask at your next meeting</div>
+              <ul class="result-list" id="docQuestions"></ul>
             </div>
           </div>
         </div>
@@ -947,26 +1041,55 @@
   <div class="wrap">
     <div class="logo"><span class="mark">L</span>Legible</div>
     <div class="footer-links">
-      <a onclick="openModal('privacy-modal')">Privacy Policy</a>
-      <a onclick="openModal('terms-modal')">Terms of Use</a>
+      <a href="#" onclick="openModal('how-modal');return false;">How Legible works</a>
+      <a href="#" onclick="openModal('privacy-modal');return false;">Privacy Policy</a>
+      <a href="#" onclick="openModal('terms-modal');return false;">Terms of Use</a>
     </div>
     <p class="footer-disclaimer">Legible provides educational information and self-advocacy tools for IEP and 504 support. Legible is not a law firm, medical provider, school district, or substitute for professional advice. AI-generated explanations and letters may contain errors and should be reviewed before use. Do not upload or paste private documents unless you have permission to do so. Laws and policies can change — always verify current information with a qualified professional.</p>
     <p class="footer-disclaimer" style="margin-top:10px; opacity:0.55;">Created by <a href="https://www.linkedin.com/in/navya-tuteja-440193319/" style="color:inherit; text-decoration:underline; text-underline-offset:2px;">Navya Tuteja</a></p>
   </div>
 </footer>
 
+<!-- ===== HOW IT WORKS MODAL ===== -->
+<div class="modal-overlay" id="how-modal" onclick="closeModalOutside(event, 'how-modal')">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="How Legible works">
+    <button class="modal-close" onclick="closeModal('how-modal')">✕</button>
+    <h2>How Legible works</h2>
+    <p class="modal-date">The engineering behind the answers</p>
+
+    <h3>A verified legal database, not AI guesses</h3>
+    <p>The rights shown under "What federal law guarantees" do not come from AI. They come from a knowledge base inside Legible that was checked by hand against the official text of IDEA and Section 504. Every point carries its citation, links to the official source — the U.S. Department of Education's regulations site, the eCFR, or state code — and the date it was last verified.</p>
+
+    <h3>AI as an explanation layer only</h3>
+    <p>Claude (Anthropic's AI model) is used for exactly one thing in the rights checker: connecting your described situation to the process, in plain English. It operates under strict rules — it may not state laws, timelines, or eligibility rules, and may not cite statutes. As a backstop, every AI response passes through a citation validator: any citation-like text that does not match the known ranges of IDEA, Section 504, or Virginia's regulations is removed automatically. And if the AI is unavailable, the verified rights still load — the AI is never load-bearing.</p>
+
+    <h3>State-by-state honesty</h3>
+    <p>State timelines are shown only when they have been hand-verified against that state's code (Virginia first: 65 business days, 8VAC20-81-60). For every other state, Legible says plainly that it has not verified the timeline yet and points you to your state's federally funded parent center instead of guessing.</p>
+
+    <h3>Privacy by design</h3>
+    <p>The screener runs entirely in your browser. The Passport is stored only on your own device. Pasted documents are processed once and never written to disk or logged. The Privacy Policy has the details.</p>
+
+    <h3>Limits</h3>
+    <p>Legible is educational information, not legal advice, and AI-generated text can contain errors even inside these guardrails. Formal disputes deserve a qualified advocate or attorney.</p>
+  </div>
+</div>
+
 <!-- ===== PRIVACY MODAL ===== -->
 <div class="modal-overlay" id="privacy-modal" onclick="closeModalOutside(event, 'privacy-modal')">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Privacy Policy">
     <button class="modal-close" onclick="closeModal('privacy-modal')">✕</button>
     <h2>Privacy Policy</h2>
-    <p class="modal-date">Effective June 2026</p>
+    <p class="modal-date">Effective June 2026 · Updated October 2026</p>
 
     <h3>What Legible does not collect</h3>
-    <p>Legible does not collect, store, or sell personal information. There are no user accounts, no sign-ups, no tracking cookies, and no third-party analytics. We do not know who you are, where you live, or anything about your child.</p>
+    <p>Legible has no user accounts and no sign-ups, and it does not collect, store, or sell personal information. We do not know who you are or anything about your child. The only measurement on this site is anonymous and aggregate, described below.</p>
+
+    <h3>Anonymous usage measurement</h3>
+    <p>Legible uses Google Analytics to count, in aggregate, how the site is used — page views and which features are used (for example, that a letter was downloaded). Google Analytics sets cookies and processes data under Google's own privacy policy. We never send it names, document text, screener answers, or anything you type.</p>
+    <p>Our server also keeps an anonymous event log for reliability monitoring: the feature used, the state, grade band, and concern category selected from the dropdowns, a timestamp, and whether the request succeeded. This log never contains free text you typed, document contents, or anything identifying. It is stored with Upstash, our database provider.</p>
 
     <h3>Rights checker and document analysis</h3>
-    <p>When you submit a request to the rights checker or paste an IEP/504 document for analysis, that text is transmitted over HTTPS to our server and then to Anthropic's API (claude.ai) to generate a response. The text is used only for that single request. It is not written to any database, not logged to any file, and not retained on our servers. Once the response is returned to your browser, the text is gone from our infrastructure.</p>
+    <p>When you submit a request to the rights checker or paste an IEP/504 document for analysis, that text is transmitted over HTTPS to our server and then to Anthropic's API to generate a response. The text is used only for that single request: it is not written to any database or log file, and once the response is returned to your browser, it is gone from our infrastructure. The only thing recorded is the anonymous event described above — the feature used and the dropdown selections, never the text itself.</p>
     <p>Anthropic may process and retain inputs per their own privacy policy and usage policies. We recommend not pasting documents that contain your child's full name, student ID, or other sensitive identifiers. Replace those details with placeholders before pasting if possible.</p>
 
     <h3>Letter generation</h3>
@@ -976,13 +1099,13 @@
     <p>Passport data is stored exclusively in your own browser using <code>localStorage</code>. It is never transmitted to any server. It lives on your device and only your device. Clearing browser data or switching browsers will remove it. Use "Download as PDF" to keep a copy.</p>
 
     <h3>The screener</h3>
-    <p>All 27 screener questions are answered and scored entirely inside your browser. Nothing is sent to any server at any point.</p>
+    <p>All 27 screener questions are answered and scored entirely inside your browser — your answers never leave the page. The only thing recorded is an anonymous counter that a screener was completed, with no answers and no result attached.</p>
 
     <h3>Server logs</h3>
     <p>Our server logs HTTP request metadata (method, path, timestamp, IP address) for operational purposes only. Pasted document content and personal details entered into forms are explicitly not logged and are not present in server logs.</p>
 
     <h3>Third-party services</h3>
-    <p>The only third-party service used is Anthropic's API for AI-generated responses. No advertising networks, analytics providers, or data brokers receive any data from Legible.</p>
+    <p>Legible uses four third-party services: Anthropic's API (AI-generated responses), Google Analytics (aggregate usage counts), Render (hosting), and Upstash (the anonymous event log). No advertising networks or data brokers receive any data from Legible.</p>
 
     <h3>Children's privacy</h3>
     <p>Legible is intended for use by parents and guardians, not children directly. We do not knowingly collect information from children under 13.</p>
@@ -994,7 +1117,7 @@
 
 <!-- ===== TERMS MODAL ===== -->
 <div class="modal-overlay" id="terms-modal" onclick="closeModalOutside(event, 'terms-modal')">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Terms of Use">
     <button class="modal-close" onclick="closeModal('terms-modal')">✕</button>
     <h2>Terms of Use</h2>
     <p class="modal-date">Effective June 2026</p>
@@ -1032,7 +1155,9 @@
 </div>
 
 <script>
-  const BACKEND_URL = window.LEGIBLE_BACKEND_URL || "https://legible-nn7i.onrender.com";
+  // Same-origin by default (the backend serves this page); the Render URL is
+  // only needed when the file is opened outside the server.
+  const BACKEND_URL = window.LEGIBLE_BACKEND_URL || (location.protocol === 'file:' ? "https://legible-nn7i.onrender.com" : '');
   let currentLanguage = 'en';
 
   function track(event, params) {
@@ -1049,24 +1174,60 @@
   });
 
   // Tab switching
-  document.querySelectorAll('.nav-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      const target = tab.dataset.tab;
-      document.getElementById('tab-check').style.display = target === 'check' ? 'block' : 'none';
-      document.getElementById('tab-upload').style.display = target === 'upload' ? 'block' : 'none';
+  function selectTab(target) {
+    document.querySelectorAll('.nav-tab').forEach(t => {
+      const active = t.dataset.tab === target;
+      t.classList.toggle('active', active);
+      t.setAttribute('aria-selected', active ? 'true' : 'false');
     });
+    document.getElementById('tab-check').style.display = target === 'check' ? 'block' : 'none';
+    document.getElementById('tab-upload').style.display = target === 'upload' ? 'block' : 'none';
+  }
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => selectTab(tab.dataset.tab));
   });
 
   function switchToExplain() {
     document.getElementById('navigator').scrollIntoView({ behavior: 'smooth' });
-    setTimeout(() => {
-      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-      document.getElementById('explain-tab').classList.add('active');
-      document.getElementById('tab-check').style.display = 'none';
-      document.getElementById('tab-upload').style.display = 'block';
-    }, 400);
+    setTimeout(() => selectTab('upload'), 400);
+  }
+
+  // Mobile nav
+  function toggleMobileNav() {
+    const links = document.getElementById('navLinks');
+    const open = links.classList.toggle('open');
+    document.getElementById('navMenuBtn').setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  document.querySelectorAll('#navLinks a').forEach(a => a.addEventListener('click', () => {
+    document.getElementById('navLinks').classList.remove('open');
+    document.getElementById('navMenuBtn').setAttribute('aria-expanded', 'false');
+  }));
+
+  // Sample case for first-time visitors and demos. The data is fictional;
+  // the processing it goes through is the real pipeline.
+  function loadSampleCase() {
+    document.getElementById('state').value = 'Virginia';
+    document.getElementById('grade').selectedIndex = 1;
+    document.getElementById('disability').value = 'ADHD';
+    document.getElementById('extraDetails').value = "Sample case (fictional): our third grader can't finish classwork, loses assignments, and was recently moved to the hallway to work alone. Her teacher says she's bright but \"needs to try harder.\" We asked about testing and were told to wait until next year.";
+    document.getElementById('demoChip').classList.add('show');
+    track('loaded_sample_case');
+  }
+
+  function loadSampleDoc() {
+    document.getElementById('docPaste').value = `SAMPLE DOCUMENT — FICTIONAL STUDENT (for demonstration only)
+
+Section 504 Plan — [Sample School District]
+Student: [Sample Student] · Grade 3
+Disability: ADHD (physician documentation on file)
+
+Accommodations:
+1. Preferential seating near the point of instruction.
+2. Directions repeated and checked for understanding.
+3. Tests administered in a small-group setting when scheduling permits.
+
+The plan will be reviewed as needed.`;
+    track('loaded_sample_doc');
   }
 
   let lastResult = null;
@@ -1156,20 +1317,99 @@
     document.getElementById('result').classList.remove('show');
   }
 
-  function renderRightsResult(parsed, dir) {
+  // Renders the pre-translated static rights content (non-English languages).
+  function renderStaticRights(parsed, dir) {
     const resultBox = document.getElementById('result');
     resultBox.setAttribute('dir', dir || 'ltr');
+    document.getElementById('resultV2').innerHTML = '';
+    document.getElementById('resultStatic').style.display = 'block';
     document.getElementById('resultHeading').textContent = parsed.heading;
     const list = document.getElementById('resultList');
     list.innerHTML = '';
     parsed.points.forEach(point => {
       const li = document.createElement('li');
-      li.innerHTML = `<span class="check">✓</span><span>${point}</span>`;
+      li.innerHTML = `<span class="check">✓</span><span>${escapeHtml(point)}</span>`;
       list.appendChild(li);
     });
     document.getElementById('resultCite').textContent = parsed.citation;
     resultBox.classList.add('show');
     resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function citeHtml(entry) {
+    const c = escapeHtml(entry.cite || '');
+    if (!c) return '';
+    return entry.url
+      ? `<span class="rx-cite"><a href="${entry.url}" target="_blank" rel="noopener">${c}</a></span>`
+      : `<span class="rx-cite">${c}</span>`;
+  }
+
+  // Renders the structured response from the verified-database API.
+  function renderRightsV2(data) {
+    const resultBox = document.getElementById('result');
+    resultBox.setAttribute('dir', 'ltr');
+    document.getElementById('resultStatic').style.display = 'none';
+
+    const fed = (data.federal || []).map(r =>
+      `<li><span class="check">✓</span><span>${escapeHtml(r.text)} ${citeHtml(r)}</span></li>`
+    ).join('');
+
+    const st = data.state || {};
+    let stateHtml;
+    if (st.verified) {
+      stateHtml = `<div class="rx-state-box">${escapeHtml(st.verified.timeline.text)} ${citeHtml(st.verified.timeline)}
+        <div class="rx-meta">State agency: <a href="${st.verified.agency.url}" target="_blank" rel="noopener">${escapeHtml(st.verified.agency.name)}</a></div></div>`;
+    } else {
+      stateHtml = `<div class="rx-state-box">${escapeHtml(st.fallback || '')}${st.parentCenterUrl ? ` <a href="${st.parentCenterUrl}" target="_blank" rel="noopener">Find your parent center →</a>` : ''}</div>`;
+    }
+
+    let aiHtml;
+    if (data.ai) {
+      const qs = (data.ai.questions || []).map(q =>
+        `<li><span class="check" style="color:#9a5f1b;">?</span><span>${escapeHtml(q)}</span></li>`
+      ).join('');
+      aiHtml = `<div class="rx-ai-box">${escapeHtml(data.ai.applies)}
+        ${qs ? `<ul class="result-list" style="margin-top:14px;margin-bottom:0;">${qs}</ul>` : ''}
+        ${data.ai.citationsRemoved ? `<div class="rx-meta">⚠ ${Number(data.ai.citationsRemoved)} unverifiable citation(s) were automatically removed from this explanation.</div>` : ''}</div>`;
+    } else {
+      aiHtml = `<div class="rx-ai-box">The AI explanation isn't available right now. Everything above still applies — it comes from Legible's verified database, not from AI.</div>`;
+    }
+
+    const steps = (data.nextSteps || []).map(s =>
+      `<li><span>${escapeHtml(s.text)}${s.url ? ` <a href="${s.url}" target="_blank" rel="noopener">${escapeHtml(s.linkLabel || s.cite || 'Source')}</a>` : ''}</span></li>`
+    ).join('');
+
+    const seen = new Set();
+    const sources = [];
+    [...(data.federal || []), ...(st.verified ? [st.verified.timeline] : []), ...(data.nextSteps || [])].forEach(e => {
+      if (e.url && !seen.has(e.url)) {
+        seen.add(e.url);
+        sources.push(`<a href="${e.url}" target="_blank" rel="noopener">${escapeHtml(e.cite || e.linkLabel || e.url)}</a>`);
+      }
+    });
+
+    document.getElementById('resultV2').innerHTML = `
+      <div class="rx-section">
+        <div class="rx-head"><h4>What federal law guarantees</h4><span class="rx-badge verified">✓ Verified · official sources</span></div>
+        <ul class="result-list">${fed}</ul>
+        <div class="rx-meta">Hand-checked against the linked official text (last verified ${escapeHtml(data.verifiedDate || '')}) · <a onclick="openModal('how-modal')">how Legible verifies this</a></div>
+      </div>
+      <div class="rx-section">
+        <div class="rx-head"><h4>In ${escapeHtml(st.name || 'your state')}</h4><span class="rx-badge ${st.verified ? 'verified' : 'info'}">${st.verified ? '✓ Verified · state code' : 'Not yet hand-verified'}</span></div>
+        ${stateHtml}
+      </div>
+      <div class="rx-section">
+        <div class="rx-head"><h4>How this may apply to your family</h4><span class="rx-badge ai">AI-generated — not verified</span></div>
+        ${aiHtml}
+      </div>
+      <div class="rx-section">
+        <div class="rx-head"><h4>Recommended next steps</h4></div>
+        <ol class="rx-steps">${steps}</ol>
+      </div>
+      ${sources.length ? `<div class="rx-sources"><strong>Official sources:</strong> ${sources.join(' &nbsp;·&nbsp; ')}</div>` : ''}`;
+
+    resultBox.classList.add('show');
+    resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   async function generateRights() {
@@ -1189,6 +1429,7 @@
     btnText.textContent = t.genBtnLoading;
     errorMsg.classList.remove('show');
     document.getElementById('result').classList.remove('show');
+    document.getElementById('letterEditor').classList.remove('show');
     track('started_rights_check', { state, grade, disability });
 
     try {
@@ -1199,21 +1440,25 @@
       if (staticData) {
         const dir = translations[lang]._dir || 'ltr';
         lastResult = { ...staticData, state, grade, disability, letterBody: '' };
-        renderRightsResult(staticData, dir);
+        renderStaticRights(staticData, dir);
       } else {
         const response = await fetch(`${BACKEND_URL}/api/rights`, {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ state, grade, disability, extra })
         });
-        if (!response.ok) throw new Error("API error");
+        if (!response.ok) {
+          let serverMsg = null;
+          try { serverMsg = (await response.json()).error; } catch (e) {}
+          throw new Error(serverMsg || "API error");
+        }
         const parsed = await response.json();
-        lastResult = { ...parsed, state, grade, disability };
-        renderRightsResult(parsed, 'ltr');
+        lastResult = { state, grade, disability, letterBody: '' };
+        renderRightsV2(parsed);
       }
       track('completed_rights_check', { state, grade, disability });
     } catch (err) {
       console.error(err);
-      errorMsg.textContent = t.errorMsg;
+      errorMsg.textContent = (err && err.message && err.message !== 'API error' && err.message !== 'Failed to fetch') ? err.message : t.errorMsg;
       errorMsg.classList.add('show');
     } finally {
       btn.disabled = false;
@@ -1222,12 +1467,14 @@
     }
   }
 
-  async function downloadLetter() {
+  // Draft the letter, show it in an editable panel first (families should
+  // read and adjust it before anything gets a school's letterhead on it).
+  async function prepareLetter() {
     if (!lastResult) return;
     track('started_letter', { disability: lastResult.disability, state: lastResult.state });
     const btn = document.getElementById('letterBtn');
     const t = (typeof UI_TRANSLATIONS !== 'undefined' && UI_TRANSLATIONS[currentLanguage]) ? UI_TRANSLATIONS[currentLanguage] : UI_TRANSLATIONS['en'];
-    const origText = t.letterBtn;
+    const origText = btn.textContent;
 
     if (!lastResult.letterBody) {
       btn.textContent = t.letterDrafting;
@@ -1239,8 +1486,7 @@
             state: lastResult.state,
             grade: lastResult.grade,
             disability: lastResult.disability,
-            extra: document.getElementById('extraDetails').value.trim(),
-            citation: lastResult.citation
+            extra: document.getElementById('extraDetails').value.trim()
           })
         });
         if (!r.ok) throw new Error();
@@ -1256,6 +1502,24 @@
       btn.disabled = false;
     }
 
+    document.getElementById('letterText').value = lastResult.letterBody;
+    const editor = document.getElementById('letterEditor');
+    editor.classList.add('show');
+    editor.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function copyLetter(btn) {
+    navigator.clipboard.writeText(document.getElementById('letterText').value).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+    });
+  }
+
+  function downloadLetterPdf() {
+    if (!lastResult) return;
+    const editedBody = document.getElementById('letterText').value.trim();
+    if (!editedBody) return;
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: "pt", format: "letter" });
     const margin = 64;
@@ -1270,14 +1534,20 @@
     doc.text("[School Name]", margin, y); y += 16;
     doc.text("Re: Request for Evaluation / Accommodations for [Child's Name]", margin, y); y += 32;
 
-    const bodyLines = doc.splitTextToSize(lastResult.letterBody, maxWidth);
-    doc.text(bodyLines, margin, y);
-    y += bodyLines.length * 14 + 28;
+    const bodyLines = doc.splitTextToSize(editedBody, maxWidth);
+    bodyLines.forEach(line => {
+      if (y > 720) { doc.addPage(); y = 72; }
+      doc.text(line, margin, y); y += 14;
+    });
+    y += 14;
+    if (y > 700) { doc.addPage(); y = 72; }
     doc.text("Sincerely,", margin, y); y += 16;
     doc.text("[Your Name]", margin, y); y += 28;
-    doc.setFontSize(9); doc.setTextColor(120, 120, 120);
-    const citeLines = doc.splitTextToSize(lastResult.citation, maxWidth);
-    doc.text(citeLines, margin, y);
+    if (lastResult.citation) {
+      doc.setFontSize(9); doc.setTextColor(120, 120, 120);
+      const citeLines = doc.splitTextToSize(lastResult.citation, maxWidth);
+      doc.text(citeLines, margin, y);
+    }
     doc.save("accommodation-request-letter.pdf");
     track('downloaded_letter', { disability: lastResult.disability, state: lastResult.state });
   }
@@ -1307,15 +1577,19 @@
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pastedText: text })
       });
-      if (!response.ok) throw new Error("API error");
+      if (!response.ok) {
+        let serverMsg = null;
+        try { serverMsg = (await response.json()).error; } catch (e) {}
+        throw new Error(serverMsg || "API error");
+      }
       const parsed = await response.json();
 
       document.getElementById('docSummary').textContent = parsed.summary;
       const accList = document.getElementById('docAccommodations');
       accList.innerHTML = '';
-      parsed.accommodations.forEach(a => {
+      (parsed.accommodations || []).forEach(a => {
         const li = document.createElement('li');
-        li.innerHTML = `<span class="check">✓</span><span>${a}</span>`;
+        li.innerHTML = `<span class="check">✓</span><span>${escapeHtml(a)}</span>`;
         accList.appendChild(li);
       });
       const concernsWrap = document.getElementById('docConcernsWrap');
@@ -1324,19 +1598,32 @@
         concernsList.innerHTML = '';
         parsed.concerns.forEach(c => {
           const li = document.createElement('li');
-          li.innerHTML = `<span class="check" style="color:#a93226;">!</span><span>${c}</span>`;
+          li.innerHTML = `<span class="check" style="color:#a93226;">!</span><span>${escapeHtml(c)}</span>`;
           concernsList.appendChild(li);
         });
         concernsWrap.style.display = 'block';
       } else {
         concernsWrap.style.display = 'none';
       }
+      const questionsWrap = document.getElementById('docQuestionsWrap');
+      const questionsList = document.getElementById('docQuestions');
+      if (parsed.questions && parsed.questions.length > 0) {
+        questionsList.innerHTML = '';
+        parsed.questions.slice(0, 3).forEach(q => {
+          const li = document.createElement('li');
+          li.innerHTML = `<span class="check" style="color:#9a5f1b;">?</span><span>${escapeHtml(q)}</span>`;
+          questionsList.appendChild(li);
+        });
+        questionsWrap.style.display = 'block';
+      } else {
+        questionsWrap.style.display = 'none';
+      }
       document.getElementById('docResult').classList.add('show');
       document.getElementById('docPaste').value = '';
       track('analyzed_document');
     } catch (err) {
       console.error(err);
-      errorMsg.textContent = tDoc.docError;
+      errorMsg.textContent = (err && err.message && err.message !== 'API error' && err.message !== 'Failed to fetch') ? err.message : tDoc.docError;
       errorMsg.classList.add('show');
     } finally {
       btn.disabled = false;
@@ -1452,13 +1739,14 @@
     const list = document.getElementById('screener-q-list');
     list.innerHTML = cat.questions.map((q, i) => {
       const ans = screenerAnswers[screenerCurrent][i];
+      const qAttr = q.replace(/"/g, '&quot;');
       return `
         <div class="screener-q-item ${ans !== null ? 'answered' : ''}" id="sq-item-${i}">
           <div class="screener-q-text">${q}</div>
-          <div class="screener-q-btns">
-            <button class="sq-btn ${ans === 2 ? 'sel-yes' : ''}" onclick="screenerAnswer(${i}, 2)">${t.screenerYes}</button>
-            <button class="sq-btn ${ans === 1 ? 'sel-sometimes' : ''}" onclick="screenerAnswer(${i}, 1)">${t.screenerSometimes}</button>
-            <button class="sq-btn ${ans === 0 ? 'sel-no' : ''}" onclick="screenerAnswer(${i}, 0)">${t.screenerNo}</button>
+          <div class="screener-q-btns" role="group" aria-label="${qAttr}">
+            <button class="sq-btn ${ans === 2 ? 'sel-yes' : ''}" aria-pressed="${ans === 2}" onclick="screenerAnswer(${i}, 2)">${t.screenerYes}</button>
+            <button class="sq-btn ${ans === 1 ? 'sel-sometimes' : ''}" aria-pressed="${ans === 1}" onclick="screenerAnswer(${i}, 1)">${t.screenerSometimes}</button>
+            <button class="sq-btn ${ans === 0 ? 'sel-no' : ''}" aria-pressed="${ans === 0}" onclick="screenerAnswer(${i}, 0)">${t.screenerNo}</button>
           </div>
         </div>`;
     }).join('');
@@ -1515,7 +1803,8 @@
     else if (total >= 11) tier = 'moderate';
     const hasHighCat = catScores.some(c => c.pct >= 0.70);
     if (hasHighCat && tier === 'mild') tier = 'moderate';
-    track('completed_screener', { tier });
+    // Only an anonymous completion counter is recorded — never answers or tier.
+    track('completed_screener');
 
     const sorted = [...catScores].sort((a, b) => b.pct - a.pct);
     const topCats = sorted.slice(0, 2).filter(c => c.score > 0).map(c => c.name);
@@ -1715,13 +2004,19 @@
   }
 
   // ========== MODALS ==========
+  let lastModalOpener = null;
   function openModal(id) {
-    document.getElementById(id).classList.add('open');
+    lastModalOpener = document.activeElement;
+    const overlay = document.getElementById(id);
+    overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
+    const closeBtn = overlay.querySelector('.modal-close');
+    if (closeBtn) closeBtn.focus();
   }
   function closeModal(id) {
     document.getElementById(id).classList.remove('open');
     document.body.style.overflow = '';
+    if (lastModalOpener && typeof lastModalOpener.focus === 'function') lastModalOpener.focus();
   }
   function closeModalOutside(e, id) {
     if (e.target === document.getElementById(id)) closeModal(id);

@@ -643,7 +643,7 @@ const UI_TRANSLATIONS = {
     genBtnText: "Show me what we're entitled to",
     genBtnLoading: "Looking up the law...",
     errorMsg: "Something went wrong generating your results. Please try again.",
-    letterBtn: "⬇ Download my accommodation letter (PDF)",
+    letterBtn: "✉ Draft my accommodation letter",
     letterDrafting: "Drafting letter…",
     letterError: "Could not generate — try again",
     rightsDisclaimer: "This translation has been prepared to help you understand your rights, but for legal precision, the original English version is also available.",
