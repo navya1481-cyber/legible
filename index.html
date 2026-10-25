@@ -456,8 +456,8 @@
   .rx-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
   .rx-badge.verified { color: var(--sage-deep); }
   .rx-badge.verified::before { background: var(--sage); }
-  .rx-badge.ai { color: #9a5f1b; }
-  .rx-badge.ai::before { background: #d4832a; }
+  .rx-badge.ai { color: var(--charcoal-soft); }
+  .rx-badge.ai::before { background: var(--charcoal-soft); }
   .rx-badge.info { color: var(--charcoal-soft); }
   .rx-badge.info::before { background: #b9b2a4; }
   .rx-cite { font-size: 12px; color: var(--charcoal-soft); white-space: nowrap; }
@@ -465,10 +465,10 @@
   .rx-cite a:hover { color: var(--amber-deep); }
   .rx-state-box { background: var(--white); border: 1px solid var(--line); border-left: 3px solid var(--amber); border-radius: 10px; padding: 16px 18px; font-size: 14.5px; color: var(--charcoal); line-height: 1.65; }
   .rx-state-box a { color: var(--sage-deep); text-decoration: underline; text-underline-offset: 2px; }
-  .rx-ai-box { background: #fdfaf4; border: 1px solid #ecdfc8; border-radius: 12px; padding: 18px 20px; font-size: 14.5px; color: var(--charcoal); line-height: 1.7; }
+  .rx-ai-box { background: #f6f8f6; border: 1px solid #e0e6e1; border-radius: 12px; padding: 18px 20px; font-size: 14.5px; color: var(--charcoal); line-height: 1.7; }
   .rx-ai-summary { font-size: 15px; line-height: 1.7; color: var(--charcoal); }
-  .rx-ai-tk { margin-top: 14px; padding-top: 14px; border-top: 1px solid #f0e8d8; }
-  .rx-ai-tk-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; color: #7a4f16; margin-bottom: 3px; }
+  .rx-ai-tk { margin-top: 14px; padding-top: 14px; border-top: 1px solid #e4e9e4; }
+  .rx-ai-tk-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
   .rx-ai-tk-detail { font-size: 13.5px; line-height: 1.6; color: var(--charcoal); }
   .rx-cat-item { padding: 13px 0; border-bottom: 1px solid #eee9df; }
   .rx-cat-item:first-child { padding-top: 0; }
@@ -504,7 +504,7 @@
   .rx-q-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
   .rx-q-grid[hidden] { display: none; }
   @media (max-width: 700px) { .rx-q-grid { grid-template-columns: 1fr; } }
-  .rx-q-card { background: var(--white); border: 1px solid rgba(212,131,42,0.35); border-radius: 10px; padding: 12px 14px; font-size: 13.5px; line-height: 1.55; color: var(--charcoal); }
+  .rx-q-card { background: var(--white); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 13.5px; line-height: 1.55; color: var(--charcoal); }
   .rx-details { border: 1px solid var(--line); border-radius: 12px; background: var(--white); margin: 0 0 10px; }
   .rx-details summary { cursor: pointer; padding: 14px 18px; font-size: 14px; font-weight: 600; color: var(--ink); list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
   .rx-details summary::-webkit-details-marker { display: none; }
@@ -526,7 +526,7 @@
   .demo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
   .demo-btn { background: var(--cream-deep); border: 1.5px dashed var(--sage); color: var(--sage-deep); border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
   .demo-btn:hover { background: rgba(61,168,144,0.1); }
-  .demo-chip { display: none; font-size: 12px; font-weight: 700; color: #9a5f1b; background: rgba(212,131,42,0.12); border-radius: 100px; padding: 5px 12px; }
+  .demo-chip { display: none; font-size: 12px; font-weight: 600; color: var(--ink-light); background: rgba(26,56,40,0.06); border-radius: 100px; padding: 5px 12px; }
   .demo-chip.show { display: inline-flex; }
 
   /* ---------- MODALS ---------- */
@@ -1689,7 +1689,7 @@ The plan will be reviewed as needed.`;
         questionsList.innerHTML = '';
         parsed.questions.slice(0, 3).forEach(q => {
           const li = document.createElement('li');
-          li.innerHTML = `<span class="check" style="color:#9a5f1b;">?</span><span>${escapeHtml(q)}</span>`;
+          li.innerHTML = `<span class="check" style="color:var(--sage-deep);">?</span><span>${escapeHtml(q)}</span>`;
           questionsList.appendChild(li);
         });
         questionsWrap.style.display = 'block';
